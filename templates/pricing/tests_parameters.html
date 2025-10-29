@@ -1,0 +1,238 @@
+{% extends 'pricing/base_pricing.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        {% if can_edit %}
+            <button class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Parameter
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-gear"></i>
+                Configure Tests
+            </button>
+        {% else %}
+            <span class="badge bg-info fs-6">Reference Only</span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Test Parameters & Specifications</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" class="form-control" placeholder="Search parameters...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if not can_edit %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        You have read-only access to test parameters for reference purposes.
+                    </div>
+                {% endif %}
+                
+                <div class="accordion" id="testsAccordion">
+                    <!-- Concrete Testing Section -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#concreteTests">
+                                <i class="bi bi-building me-2"></i>
+                                <strong>Concrete Testing</strong>
+                                <span class="badge bg-secondary ms-2">5 Tests</span>
+                            </button>
+                        </h2>
+                        <div id="concreteTests" class="accordion-collapse collapse show" data-bs-parent="#testsAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Test Code</th>
+                                                <th>Test Name</th>
+                                                <th>Parameters</th>
+                                                <th>Standards</th>
+                                                <th>Duration</th>
+                                                {% if can_edit %}
+                                                    <th>Actions</th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>CON-001</td>
+                                                <td>Compressive Strength</td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark">Cube Size: 150mm</span>
+                                                    <span class="badge bg-light text-dark">Age: 7, 14, 28 days</span>
+                                                </td>
+                                                <td>BS EN 12390-3</td>
+                                                <td>28 days</td>
+                                                {% if can_edit %}
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                    </td>
+                                                {% endif %}
+                                            </tr>
+                                            <tr>
+                                                <td>CON-002</td>
+                                                <td>Slump Test</td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark">Fresh Concrete</span>
+                                                    <span class="badge bg-light text-dark">Workability</span>
+                                                </td>
+                                                <td>BS EN 12350-2</td>
+                                                <td>Immediate</td>
+                                                {% if can_edit %}
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                    </td>
+                                                {% endif %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Soil Testing Section -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#soilTests">
+                                <i class="bi bi-globe me-2"></i>
+                                <strong>Soil Testing</strong>
+                                <span class="badge bg-secondary ms-2">8 Tests</span>
+                            </button>
+                        </h2>
+                        <div id="soilTests" class="accordion-collapse collapse" data-bs-parent="#testsAccordion">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Test Code</th>
+                                                <th>Test Name</th>
+                                                <th>Parameters</th>
+                                                <th>Standards</th>
+                                                <th>Duration</th>
+                                                {% if can_edit %}
+                                                    <th>Actions</th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>SOIL-001</td>
+                                                <td>Compaction Test</td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark">Proctor Standard</span>
+                                                    <span class="badge bg-light text-dark">Optimum Moisture</span>
+                                                </td>
+                                                <td>BS 1377-4</td>
+                                                <td>1-2 days</td>
+                                                {% if can_edit %}
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                    </td>
+                                                {% endif %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h4 class="text-primary mb-0">47</h4>
+                    <small class="text-muted">Total Test Types</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small">Concrete Tests</span>
+                        <span class="badge bg-secondary">15</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small">Soil Tests</span>
+                        <span class="badge bg-secondary">12</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small">Aggregate Tests</span>
+                        <span class="badge bg-secondary">8</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small">Steel Tests</span>
+                        <span class="badge bg-secondary">6</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small">Other Tests</span>
+                        <span class="badge bg-secondary">6</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    {% if can_edit %}
+                        <button class="btn btn-outline-primary btn-sm">Export Parameters</button>
+                        <button class="btn btn-outline-secondary btn-sm">Import Standards</button>
+                    {% else %}
+                        <button class="btn btn-outline-info btn-sm">Download Reference</button>
+                        <button class="btn btn-outline-secondary btn-sm">Print Parameters</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if user.is_technician %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Technician Notes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning small">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Always follow the specified parameters and standards for accurate test results.
+                    </div>
+                    <div class="small">
+                        <strong>Quick Reference:</strong>
+                        <ul class="mt-2 mb-0">
+                            <li>Check equipment calibration</li>
+                            <li>Record ambient conditions</li>
+                            <li>Follow sample preparation</li>
+                            <li>Document all deviations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

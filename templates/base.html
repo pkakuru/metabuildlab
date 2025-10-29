@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MetaBuildLab{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* Top Navigation Bar for Main Modules */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .main-modules .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 25px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .main-modules .nav-link:hover,
+        .main-modules .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+            color: white !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Left Sidebar for Contextual Navigation */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            height: calc(100vh - 70px);
+            width: 260px;
+            background-color: #2c3e50;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .sidebar-collapsed {
+            width: 60px;
+        }
+        
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 12px 20px;
+            margin: 2px 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: #34495e;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-collapsed .nav-link span {
+            display: none;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 25px;
+            transition: all 0.3s;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .sidebar-collapsed ~ .main-content {
+            margin-left: 60px;
+        }
+        
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .module-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            margin: -1.25rem -1.25rem 1.25rem -1.25rem;
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+        
+        .sidebar-section-title {
+            color: #95a5a6;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 10px 10px 10px;
+            font-weight: 600;
+        }
+        
+        .sidebar-collapsed .sidebar-section-title {
+            display: none;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background-color: #34495e;
+            margin: 15px 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            
+            .sidebar .nav-link span,
+            .sidebar-section-title {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 60px;
+            }
+            
+            .main-modules {
+                display: none !important;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation Bar - Main Modules -->
+    <nav class="navbar navbar-expand-lg top-navbar">
+        <div class="container-fluid">
+            <!-- Brand/Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="bi bi-building me-2"></i>
+                Meta Build Lab
+            </a>
+            
+            <!-- Main Module Navigation - Role Based -->
+            {% if user.is_authenticated %}
+                <div class="navbar-nav main-modules d-flex flex-row">
+                    {% if 'sales' in accessible_modules %}
+                        <a class="nav-link {% if request.resolver_match.app_name == 'sales' %}active{% endif %}" href="{% url 'sales:dashboard' %}">
+                            <i class="bi bi-person-lines-fill me-1"></i>Sales
+                        </a>
+                    {% endif %}
+                    {% if 'operations' in accessible_modules %}
+                        <a class="nav-link {% if request.resolver_match.app_name == 'operations' %}active{% endif %}" href="{% url 'operations:dashboard' %}">
+                            <i class="bi bi-gear-wide-connected me-1"></i>Operations
+                        </a>
+                    {% endif %}
+                    {% if 'pricing' in accessible_modules %}
+                        <a class="nav-link {% if request.resolver_match.app_name == 'pricing' %}active{% endif %}" href="{% url 'pricing:dashboard' %}">
+                            <i class="bi bi-tags me-1"></i>Pricing
+                        </a>
+                    {% endif %}
+                    {% if 'finance' in accessible_modules %}
+                        <a class="nav-link {% if request.resolver_match.app_name == 'finance' %}active{% endif %}" href="{% url 'finance:dashboard' %}">
+                            <i class="bi bi-graph-up me-1"></i>Finance
+                        </a>
+                    {% endif %}
+                    {% if 'config' in accessible_modules %}
+                        <a class="nav-link {% if request.resolver_match.app_name == 'config' %}active{% endif %}" href="{% url 'config:dashboard' %}">
+                            <i class="bi bi-sliders me-1"></i>Config
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- User Menu -->
+            <div class="navbar-nav ms-auto">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span class="d-none d-md-inline">
+                            {% if user.is_authenticated %}
+                                {{ user.get_role_display }} - {{ user.get_full_name|default:user.username }}
+                            {% else %}
+                                Guest
+                            {% endif %}
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if user.is_authenticated %}
+                            <li class="dropdown-item-text">
+                                <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+                                <small class="text-muted">{{ user.role|title }} - {{ user.department|default:"Meta Build Lab" }}</small>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#settings"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Left Sidebar - Contextual Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="p-3 border-bottom">
+            <button class="btn btn-outline-light btn-sm w-100" onclick="toggleSidebar()">
+                <i class="bi bi-list me-2"></i><span>Toggle Menu</span>
+            </button>
+        </div>
+        
+        <div class="pt-3">
+            {% block sidebar_content %}
+            <!-- Default Dashboard Sidebar -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">Dashboard</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}">
+                            <i class="bi bi-house-door-fill"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports">
+                            <i class="bi bi-bar-chart"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#notifications">
+                            <i class="bi bi-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% endblock %}
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('sidebar-collapsed');
+        }
+        
+        // Set active navigation item based on current URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

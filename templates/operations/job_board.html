@@ -1,0 +1,308 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-kanban me-2"></i>Monitor and manage all laboratory test jobs
+                </p>
+            </div>
+            <div>
+                <button class="btn btn-primary">
+                    <i class="bi bi-plus me-2"></i>New Job
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Job Status Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-info border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Pending</div>
+                        <div class="h4 fw-bold mb-0">12</div>
+                    </div>
+                    <i class="bi bi-clock text-info fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-warning border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">In Progress</div>
+                        <div class="h4 fw-bold mb-0">23</div>
+                    </div>
+                    <i class="bi bi-gear text-warning fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Under Review</div>
+                        <div class="h4 fw-bold mb-0">8</div>
+                    </div>
+                    <i class="bi bi-eye text-primary fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-success border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Completed</div>
+                        <div class="h4 fw-bold mb-0">156</div>
+                    </div>
+                    <i class="bi bi-check-circle text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Job Board Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">All Laboratory Jobs</h5>
+            </div>
+            <div class="col-auto">
+                <div class="input-group">
+                    <select class="form-select">
+                        <option>All Status</option>
+                        <option>Pending</option>
+                        <option>In Progress</option>
+                        <option>Under Review</option>
+                        <option>Completed</option>
+                    </select>
+                    <input type="text" class="form-control" placeholder="Search jobs...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Client</th>
+                        <th>Test Type</th>
+                        <th>Samples</th>
+                        <th>Assigned To</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">JB-2024-091</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    URA
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Uganda Roads Authority</div>
+                                    <small class="text-muted">Asphalt Testing Project</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Marshall Stability</span><br>
+                                <small class="text-muted">Asphalt Mix Design</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">6 samples</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/32x32/28a745/fff?text=JM" class="rounded-circle me-2" width="32" height="32">
+                                <div>
+                                    <div class="small fw-medium">John Mukasa</div>
+                                    <small class="text-muted">Senior Technician</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-success">Normal</span></td>
+                        <td>
+                            <div>Oct 30, 2024</div>
+                            <small class="text-muted">2 days left</small>
+                        </td>
+                        <td><span class="badge bg-success">Completed</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-info" title="Download Report">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">JB-2024-090</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    KC
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Kampala Construction</div>
+                                    <small class="text-muted">Shopping Mall Project</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Concrete Core Testing</span><br>
+                                <small class="text-muted">Compressive Strength</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">12 cores</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/32x32/dc3545/fff?text=SN" class="rounded-circle me-2" width="32" height="32">
+                                <div>
+                                    <div class="small fw-medium">Sarah Nakato</div>
+                                    <small class="text-muted">Lab Technician</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-danger">High</span></td>
+                        <td>
+                            <div class="text-danger">Oct 28, 2024</div>
+                            <small class="text-danger">Due today</small>
+                        </td>
+                        <td><span class="badge bg-warning">In Progress</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-warning" title="Urgent Follow-up">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">JB-2024-089</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    NE
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">NWSC Engineering</div>
+                                    <small class="text-muted">Water Pipeline Materials</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Soil Classification</span><br>
+                                <small class="text-muted">AASHTO & USCS</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">8 samples</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/32x32/007bff/fff?text=DK" class="rounded-circle me-2" width="32" height="32">
+                                <div>
+                                    <div class="small fw-medium">David Kato</div>
+                                    <small class="text-muted">Junior Technician</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-success">Normal</span></td>
+                        <td>
+                            <div>Nov 2, 2024</div>
+                            <small class="text-success">5 days left</small>
+                        </td>
+                        <td><span class="badge bg-primary">Under Review</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="Approve Results">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block sidebar_content %}
+<!-- Sales Module Sidebar - Role Based -->
+
+{% if user.role == 'director' %}
+    <!-- 🔹 Director - Full Sales Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Pipeline</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:quotations' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>All Quotations</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:new_quotation' %}">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span>New Quotation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:quotation_kanban' %}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Quotation Kanban Board</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:activity_log' %}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Activity Log</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Accounts</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:clients' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Clients</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:leads' %}">
+                    <i class="bi bi-person-plus"></i>
+                    <span>Leads</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:contracts' %}">
+                    <i class="bi bi-file-text"></i>
+                    <span>Contracts</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Reports</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:sales_summary' %}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Sales Summary</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:conversion_rates' %}">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Conversion Rates</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'lab_manager' %}
+    <!-- 🔹 Lab Manager - Limited Sales Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Quotations</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:quotations' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>All Quotations</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:new_quotation' %}">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span>New Quotation</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Accounts</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:clients' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Clients</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:contracts' %}">
+                    <i class="bi bi-file-text"></i>
+                    <span>Contracts</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'office_staff' %}
+    <!-- 🔹 Office Staff - Basic Sales Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Quotations</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:quotations' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>All Quotations</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:new_quotation' %}">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span>New Quotation</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Clients</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'sales:clients' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Clients</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% else %}
+    <!-- 🔹 Technician - No Sales Access (This should not be shown as they can't access Sales) -->
+    <div class="sidebar-section">
+        <div class="alert alert-warning m-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <small>Access Denied: Sales module requires Office Staff level or higher.</small>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Quick Actions for all roles with access -->
+{% if user.role != 'technician' %}
+<div class="nav-divider"></div>
+<div class="sidebar-section">
+    <h6 class="sidebar-section-title">Quick Actions</h6>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">
+                <i class="bi bi-house-door"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

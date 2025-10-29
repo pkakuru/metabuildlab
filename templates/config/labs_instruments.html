@@ -1,0 +1,288 @@
+{% extends 'config/base_config.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        {% if can_edit %}
+            <button class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Instrument
+            </button>
+            <button class="btn btn-outline-success">
+                <i class="bi bi-building-add"></i>
+                New Lab
+            </button>
+        {% else %}
+            <span class="badge bg-info fs-6">View Only Access</span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Laboratory Infrastructure</h5>
+                    </div>
+                    <div class="col-auto">
+                        {% if not can_edit %}
+                            <span class="badge bg-info">View Only Mode</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Lab Sections -->
+                <div class="accordion" id="labsAccordion">
+                    <!-- Concrete Testing Lab -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#concreteLabDetails">
+                                <i class="bi bi-building me-2"></i>
+                                <strong>Concrete Testing Laboratory</strong>
+                                <span class="badge bg-success ms-2">Operational</span>
+                            </button>
+                        </h2>
+                        <div id="concreteLabDetails" class="accordion-collapse collapse show" data-bs-parent="#labsAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Equipment Inventory</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Instrument</th>
+                                                        <th>Model</th>
+                                                        <th>Status</th>
+                                                        {% if can_edit %}<th>Actions</th>{% endif %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Compression Testing Machine</td>
+                                                        <td>CTM-2000</td>
+                                                        <td><span class="badge bg-success">Active</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Concrete Mixer</td>
+                                                        <td>CM-50</td>
+                                                        <td><span class="badge bg-success">Active</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Slump Cone</td>
+                                                        <td>SC-Standard</td>
+                                                        <td><span class="badge bg-warning text-dark">Maintenance</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Lab Details</h6>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Location:</small>
+                                            <div>Building A, Floor 1</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Capacity:</small>
+                                            <div>20 samples/day</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Lab Manager:</small>
+                                            <div>Sarah Manager</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Safety Certification:</small>
+                                            <div><span class="badge bg-success">Valid until Dec 2025</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Soil Testing Lab -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#soilLabDetails">
+                                <i class="bi bi-globe me-2"></i>
+                                <strong>Soil Testing Laboratory</strong>
+                                <span class="badge bg-success ms-2">Operational</span>
+                            </button>
+                        </h2>
+                        <div id="soilLabDetails" class="accordion-collapse collapse" data-bs-parent="#labsAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Equipment Inventory</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Instrument</th>
+                                                        <th>Model</th>
+                                                        <th>Status</th>
+                                                        {% if can_edit %}<th>Actions</th>{% endif %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Proctor Compaction Test</td>
+                                                        <td>PCT-Standard</td>
+                                                        <td><span class="badge bg-success">Active</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Triaxial Testing Machine</td>
+                                                        <td>TTM-300</td>
+                                                        <td><span class="badge bg-success">Active</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Sieve Analysis Set</td>
+                                                        <td>SAS-Complete</td>
+                                                        <td><span class="badge bg-danger">Out of Service</span></td>
+                                                        {% if can_edit %}
+                                                            <td><button class="btn btn-sm btn-outline-primary">Edit</button></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Lab Details</h6>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Location:</small>
+                                            <div>Building B, Floor 1</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Capacity:</small>
+                                            <div>15 samples/day</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Lab Manager:</small>
+                                            <div>Sarah Manager</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Safety Certification:</small>
+                                            <div><span class="badge bg-warning text-dark">Renewal Due</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Infrastructure Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h4 class="text-primary mb-0">4</h4>
+                    <small class="text-muted">Active Laboratories</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Total Instruments</small>
+                        <span class="badge bg-primary">28</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Operational</small>
+                        <span class="badge bg-success">24</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Maintenance</small>
+                        <span class="badge bg-warning text-dark">3</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>Out of Service</small>
+                        <span class="badge bg-danger">1</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    {% if can_edit %}
+                        <button class="btn btn-outline-primary btn-sm">Maintenance Schedule</button>
+                        <button class="btn btn-outline-success btn-sm">Calibration Log</button>
+                        <button class="btn btn-outline-info btn-sm">Equipment Report</button>
+                    {% else %}
+                        <button class="btn btn-outline-info btn-sm">View Equipment Report</button>
+                        <button class="btn btn-outline-secondary btn-sm">Download Inventory</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Maintenance Alerts</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>CTM-2000 Calibration Due</strong><br>
+                    Compression Testing Machine - Due in 5 days
+                </div>
+                <div class="alert alert-danger small">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <strong>SAS-Complete Out of Service</strong><br>
+                    Sieve Analysis Set - Requires repair
+                </div>
+                {% if can_edit %}
+                    <div class="d-grid">
+                        <button class="btn btn-sm btn-outline-primary">Schedule Maintenance</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user.is_lab_manager and not can_edit %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Lab Manager Notes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="small">
+                        <p>You have view-only access to lab and instrument information.</p>
+                        <p><strong>To request changes:</strong></p>
+                        <ul class="mb-0">
+                            <li>Contact system administrator</li>
+                            <li>Submit maintenance requests</li>
+                            <li>Report equipment issues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

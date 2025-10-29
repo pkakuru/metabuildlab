@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block sidebar_content %}
+<!-- Finance Module Sidebar - Role Based -->
+
+{% if user.role == 'director' %}
+    <!-- 🔹 Director - Full Finance Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Billing</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:invoices' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>All Invoices</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:new_invoice' %}">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>New Invoice</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:record_payment' %}">
+                    <i class="bi bi-credit-card"></i>
+                    <span>Record Payment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:receipts' %}">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span>Receipts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:credit_notes' %}">
+                    <i class="bi bi-file-earmark-minus"></i>
+                    <span>Credit Notes</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:statements' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Statements</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Analytics</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:unpaid_ageing' %}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Unpaid / Ageing</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:revenue_reports' %}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Revenue Reports</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'lab_manager' %}
+    <!-- 🔹 Lab Manager - Finance Oversight -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Financial Overview</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:invoices' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>All Invoices</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Reports</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:revenue_reports' %}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Revenue Reports</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'office_staff' %}
+    <!-- 🔹 Office Staff - Daily Finance Operations -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Invoice Management</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:invoices' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>All Invoices</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:new_invoice' %}">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>New Invoice</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Payments</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:record_payment' %}">
+                    <i class="bi bi-credit-card"></i>
+                    <span>Record Payment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'finance:receipts' %}">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span>Receipts</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% else %}
+    <!-- 🔹 Technician - No Finance Access -->
+    <div class="sidebar-section">
+        <div class="alert alert-warning m-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <small>Access Denied: Finance module requires Office Staff level or higher access.</small>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Quick Actions for authorized roles -->
+{% if user.role != 'technician' %}
+<div class="nav-divider"></div>
+<div class="sidebar-section">
+    <h6 class="sidebar-section-title">Quick Actions</h6>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">
+                <i class="bi bi-house-door"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </li>
+        {% if user.role == 'office_staff' or user.role == 'director' %}
+        <li class="nav-item">
+            <a class="nav-link" href="#payment-calculator">
+                <i class="bi bi-calculator"></i>
+                <span>Payment Calculator</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

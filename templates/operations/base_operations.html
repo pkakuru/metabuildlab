@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block sidebar_content %}
+<!-- Operations Module Sidebar - Role Based -->
+
+{% if user.role == 'director' %}
+    <!-- 🔹 Director - Full Operations Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Work</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:job_board' %}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Job Board (All Jobs)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-clipboard2-data"></i>
+                    <span>Samples Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:technician_worklist' %}">
+                    <i class="bi bi-list-task"></i>
+                    <span>Technician Worklist</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:results_review' %}">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Results Review</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:attachments' %}">
+                    <i class="bi bi-paperclip"></i>
+                    <span>Attachments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Tracking</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:turnaround_tracker' %}">
+                    <i class="bi bi-stopwatch"></i>
+                    <span>Turnaround Tracker</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:job_reports' %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Job Reports</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'lab_manager' %}
+    <!-- 🔹 Lab Manager - Operations Management -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Lab Operations</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:job_board' %}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Job Board</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-clipboard2-data"></i>
+                    <span>Samples Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:results_review' %}">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Results Review</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Tracking</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:turnaround_tracker' %}">
+                    <i class="bi bi-stopwatch"></i>
+                    <span>Turnaround Tracker</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'technician' %}
+    <!-- 🔹 Technician - Personal Workflow -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">My Work</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:my_jobs' %}">
+                    <i class="bi bi-person-workspace"></i>
+                    <span>My Jobs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:results_entry' %}">
+                    <i class="bi bi-pencil-square"></i>
+                    <span>Results Entry</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:my_attachments' %}">
+                    <i class="bi bi-paperclip"></i>
+                    <span>My Attachments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Activity</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:activity_log' %}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Activity Log</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% elif user.role == 'office_staff' %}
+    <!-- 🔹 Office Staff - Limited Operations Access -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Sample Management</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-clipboard2-data"></i>
+                    <span>Samples Intake</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar-section mt-3">
+        <div class="alert alert-info m-3">
+            <i class="bi bi-info-circle me-2"></i>
+            <small><strong>Limited Access:</strong> Contact Lab Manager for additional operations access.</small>
+        </div>
+    </div>
+
+{% else %}
+    <!-- Fallback for unknown roles -->
+    <div class="sidebar-section">
+        <div class="alert alert-warning m-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <small>Access Denied: Operations module requires appropriate lab access level.</small>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Quick Actions for authorized roles -->
+{% if user.role != 'unknown' %}
+<div class="nav-divider"></div>
+<div class="sidebar-section">
+    <h6 class="sidebar-section-title">Quick Actions</h6>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">
+                <i class="bi bi-house-door"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </li>
+        {% if user.role != 'technician' %}
+        <li class="nav-item">
+            <a class="nav-link" href="#help">
+                <i class="bi bi-question-circle"></i>
+                <span>Lab Procedures</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

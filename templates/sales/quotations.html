@@ -1,0 +1,185 @@
+{% extends 'sales/base_sales.html' %}
+
+{% block title %}All Quotations - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Manage all client quotations and proposals
+                </p>
+            </div>
+            <div>
+                <a href="{% url 'sales:new_quotation' %}" class="btn btn-primary">
+                    <i class="bi bi-plus me-2"></i>New Quotation
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quotations Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="mb-0">All Quotations</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search quotations...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Quote ID</th>
+                                <th>Client</th>
+                                <th>Project</th>
+                                <th>Amount (UGX)</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Valid Until</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-001</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            KC
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">Kampala Construction Ltd</div>
+                                            <small class="text-muted">info@kampalaconst.co.ug</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Concrete Testing - Shopping Mall</td>
+                                <td class="fw-bold">4,500,000</td>
+                                <td><span class="badge bg-warning">Pending Review</span></td>
+                                <td>Oct 25, 2024</td>
+                                <td class="text-danger">Nov 10, 2024</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success" title="Send">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-002</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-success text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            URA
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">Uganda Roads Authority</div>
+                                            <small class="text-muted">procurement@unra.go.ug</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Road Materials Testing</td>
+                                <td class="fw-bold">12,800,000</td>
+                                <td><span class="badge bg-success">Accepted</span></td>
+                                <td>Oct 24, 2024</td>
+                                <td class="text-success">Dec 15, 2024</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info" title="Generate Contract">
+                                            <i class="bi bi-file-text"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-003</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-info text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            NE
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">NWSC Engineering</div>
+                                            <small class="text-muted">eng@nwsc.co.ug</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Water Pipeline Materials</td>
+                                <td class="fw-bold">2,100,000</td>
+                                <td><span class="badge bg-info">Under Review</span></td>
+                                <td>Oct 23, 2024</td>
+                                <td>Nov 8, 2024</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Follow Up">
+                                            <i class="bi bi-telephone"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

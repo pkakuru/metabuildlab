@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block sidebar_content %}
+<div class="sidebar-section">
+    <div class="sidebar-section-title">
+        <i class="bi bi-sliders-fill"></i>
+        <span>Configuration</span>
+    </div>
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'config:dashboard' %}">
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </a>
+        </li>
+        
+        {% comment %} Director Full Access {% endcomment %}
+        {% if user.is_director %}
+            <li class="nav-item mt-2">
+                <div class="sidebar-subsection-title">Administration</div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:administration' %}">
+                    <i class="bi bi-gear-wide-connected"></i>
+                    System Administration
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:users_roles' %}">
+                    <i class="bi bi-people"></i>
+                    Users & Roles
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:labs_instruments' %}">
+                    <i class="bi bi-building"></i>
+                    Labs & Instruments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:test_catalog_config' %}">
+                    <i class="bi bi-collection"></i>
+                    Test Catalog
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:pricing_rules_config' %}">
+                    <i class="bi bi-currency-dollar"></i>
+                    Pricing Rules
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:audit_log' %}">
+                    <i class="bi bi-journal-text"></i>
+                    Audit Log
+                </a>
+            </li>
+        {% endif %}
+        
+        {% comment %} Lab Manager Limited Access {% endcomment %}
+        {% if user.is_lab_manager %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:labs_instruments' %}">
+                    <i class="bi bi-building"></i>
+                    Labs & Instruments
+                    <small class="text-muted">(View Only)</small>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config:audit_log' %}">
+                    <i class="bi bi-journal-text"></i>
+                    Audit Log
+                    <small class="text-muted">(View Only)</small>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar-subsection-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--bs-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.5rem 1rem 0.25rem;
+        border-top: 1px solid var(--bs-border-color);
+        margin-top: 0.5rem;
+    }
+    
+    .nav-link small {
+        display: block;
+        font-size: 0.7rem;
+        margin-top: 0.125rem;
+    }
+    
+    .admin-card {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .config-card {
+        border-left: 4px solid #6f42c1;
+    }
+    
+    .security-card {
+        border-left: 4px solid #fd7e14;
+    }
+</style>
+{% endblock %}

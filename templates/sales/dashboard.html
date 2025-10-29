@@ -1,0 +1,204 @@
+{% extends 'sales/base_sales.html' %}
+
+{% block title %}Sales Dashboard - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-person-lines-fill me-2"></i>Client Management, Quotations & Sales Pipeline
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-success">{{ role_display }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales KPI Cards based on role -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #28a745;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-file-earmark-text text-success fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Active Quotations</div>
+                        <div class="fs-4 fw-bold">23</div>
+                        <div class="small text-success">
+                            <i class="bi bi-arrow-up"></i> 5 new this week
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #007bff;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-people text-primary fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Active Clients</div>
+                        <div class="fs-4 fw-bold">156</div>
+                        <div class="small text-info">
+                            <i class="bi bi-plus-circle"></i> 7 new this month
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.role == 'director' %}
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #ffc107;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-person-plus text-warning fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Hot Leads</div>
+                        <div class="fs-4 fw-bold">12</div>
+                        <div class="small text-warning">
+                            <i class="bi bi-fire"></i> Follow up required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #dc3545;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-graph-up text-danger fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Conversion Rate</div>
+                        <div class="fs-4 fw-bold">68%</div>
+                        <div class="small text-success">
+                            <i class="bi bi-arrow-up"></i> +5% this quarter
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Role-specific content sections -->
+<div class="row g-4">
+    <!-- Recent Quotations -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Recent Quotations
+                </h5>
+                <a href="{% url 'sales:quotations' %}" class="btn btn-outline-primary btn-sm">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Quote ID</th>
+                                <th>Client</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-001</span></td>
+                                <td>Kampala Construction Ltd</td>
+                                <td>UGX 4.5M</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>Oct 25, 2024</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-002</span></td>
+                                <td>Uganda Roads Authority</td>
+                                <td>UGX 12.8M</td>
+                                <td><span class="badge bg-success">Accepted</span></td>
+                                <td>Oct 24, 2024</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-secondary">QT-2024-003</span></td>
+                                <td>NWSC Engineering</td>
+                                <td>UGX 2.1M</td>
+                                <td><span class="badge bg-info">Under Review</span></td>
+                                <td>Oct 23, 2024</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'sales:new_quotation' %}" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-plus me-2"></i>New Quotation
+                    </a>
+                    <a href="{% url 'sales:clients' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-people me-2"></i>Manage Clients
+                    </a>
+                    
+                    {% if user.role == 'director' %}
+                    <a href="{% url 'sales:leads' %}" class="btn btn-outline-success">
+                        <i class="bi bi-person-plus me-2"></i>Add Lead
+                    </a>
+                    <a href="{% url 'sales:quotation_kanban' %}" class="btn btn-outline-info">
+                        <i class="bi bi-kanban me-2"></i>Kanban Board
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Role Access Info -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-2">Your Sales Access:</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% if user.role == 'director' %}
+                            <span class="badge bg-success">Full Access</span>
+                            <span class="badge bg-info">Reports</span>
+                            <span class="badge bg-warning">Leads</span>
+                        {% elif user.role == 'lab_manager' %}
+                            <span class="badge bg-success">Quotations</span>
+                            <span class="badge bg-info">Clients</span>
+                            <span class="badge bg-warning">Contracts</span>
+                        {% else %}
+                            <span class="badge bg-success">Quotations</span>
+                            <span class="badge bg-info">Clients</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

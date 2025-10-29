@@ -1,0 +1,200 @@
+{% extends 'config/base_config.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <button class="btn btn-danger">
+            <i class="bi bi-shield-exclamation"></i>
+            System Maintenance
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-download"></i>
+            Backup System
+        </button>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <strong>Administrator Access:</strong> You have full system administration privileges. Please use these tools carefully.
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card admin-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Administration Tools</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-database fs-1 text-primary mb-2"></i>
+                                <h6>Database Management</h6>
+                                <p class="small text-muted">Backup, restore, and optimize database</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-outline-primary">Manage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-shield-check fs-1 text-success mb-2"></i>
+                                <h6>Security Settings</h6>
+                                <p class="small text-muted">Password policies, session management</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-outline-success">Configure</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-envelope fs-1 text-info mb-2"></i>
+                                <h6>Email Configuration</h6>
+                                <p class="small text-muted">SMTP settings, notification templates</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-outline-info">Setup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-cloud-arrow-up fs-1 text-warning mb-2"></i>
+                                <h6>System Backup</h6>
+                                <p class="small text-muted">Automated backups, restore points</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-outline-warning">Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Health Monitor</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Status</th>
+                                <th>Last Check</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="bi bi-database me-2"></i>Database</td>
+                                <td><span class="badge bg-success">Healthy</span></td>
+                                <td>2 minutes ago</td>
+                                <td><button class="btn btn-sm btn-outline-secondary">Test Connection</button></td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-envelope me-2"></i>Email Service</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>5 minutes ago</td>
+                                <td><button class="btn btn-sm btn-outline-secondary">Send Test</button></td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-cloud me-2"></i>File Storage</td>
+                                <td><span class="badge bg-warning text-dark">Limited Space</span></td>
+                                <td>1 minute ago</td>
+                                <td><button class="btn btn-sm btn-outline-warning">Clean Up</button></td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-shield me-2"></i>Security</td>
+                                <td><span class="badge bg-success">Secure</span></td>
+                                <td>30 seconds ago</td>
+                                <td><button class="btn btn-sm btn-outline-secondary">Scan</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card security-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Security Alerts</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>3 failed login attempts</strong><br>
+                    IP: 192.168.1.45 - 10 minutes ago
+                </div>
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>System backup completed</strong><br>
+                    Daily backup - 2 hours ago
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-outline-primary">View All Alerts</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card config-card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Application Version</small>
+                    <div><strong>Meta Build Lab v1.0.0</strong></div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Django Version</small>
+                    <div><strong>5.2.7</strong></div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Database</small>
+                    <div><strong>SQLite 3.x</strong></div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Server Uptime</small>
+                    <div><strong>7 days, 14 hours</strong></div>
+                </div>
+                <div>
+                    <small class="text-muted">Last Maintenance</small>
+                    <div><strong>3 days ago</strong></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-danger btn-sm">Clear Cache</button>
+                    <button class="btn btn-outline-warning btn-sm">Restart Services</button>
+                    <button class="btn btn-outline-info btn-sm">Export Logs</button>
+                    <button class="btn btn-outline-secondary btn-sm">System Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

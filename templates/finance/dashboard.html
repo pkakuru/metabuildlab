@@ -1,0 +1,432 @@
+{% extends 'finance/base_finance.html' %}
+
+{% block title %}Finance Dashboard - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-currency-dollar me-2"></i>
+                    {% if user.role == 'director' %}
+                        Complete financial management and revenue analytics
+                    {% elif user.role == 'lab_manager' %}
+                        Financial oversight and revenue tracking
+                    {% else %}
+                        Invoice processing and payment management
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-success">{{ role_display }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Finance KPI Cards based on role -->
+<div class="row g-4 mb-4">
+    {% if user.role == 'director' %}
+        <!-- Director Financial KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-currency-dollar text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Monthly Revenue</div>
+                            <div class="fs-4 fw-bold">UGX 28.5M</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-up"></i> +15.2% vs last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #ffc107;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-exclamation-triangle text-warning fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Outstanding</div>
+                            <div class="fs-4 fw-bold">UGX 8.2M</div>
+                            <div class="small text-warning">
+                                <i class="bi bi-clock"></i> 23 overdue invoices
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-receipt text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Invoices This Month</div>
+                            <div class="fs-4 fw-bold">156</div>
+                            <div class="small text-info">
+                                <i class="bi bi-plus-circle"></i> 12 pending approval
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #17a2b8;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-graph-up text-info fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Collection Rate</div>
+                            <div class="fs-4 fw-bold">87.4%</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-up"></i> +2.1% improvement
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif user.role == 'lab_manager' %}
+        <!-- Lab Manager Financial KPIs -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-currency-dollar text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Monthly Revenue</div>
+                            <div class="fs-4 fw-bold">UGX 28.5M</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-up"></i> Strong performance
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-receipt text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Active Invoices</div>
+                            <div class="fs-4 fw-bold">89</div>
+                            <div class="small text-info">
+                                <i class="bi bi-eye"></i> Review access
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card stat-card" style="border-left-color: #17a2b8;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-graph-up text-info fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Lab Revenue Share</div>
+                            <div class="fs-4 fw-bold">73%</div>
+                            <div class="small text-info">
+                                <i class="bi bi-info-circle"></i> Of total revenue
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Office Staff Financial KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-receipt-cutoff text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Invoices Today</div>
+                            <div class="fs-4 fw-bold">12</div>
+                            <div class="small text-primary">
+                                <i class="bi bi-plus"></i> 3 created by you
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-credit-card text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Payments Recorded</div>
+                            <div class="fs-4 fw-bold">8</div>
+                            <div class="small text-success">
+                                <i class="bi bi-check-circle"></i> This week
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #ffc107;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-hourglass-split text-warning fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Pending Actions</div>
+                            <div class="fs-4 fw-bold">5</div>
+                            <div class="small text-warning">
+                                <i class="bi bi-exclamation-circle"></i> Need attention
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #17a2b8;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-file-earmark-check text-info fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Receipts Issued</div>
+                            <div class="fs-4 fw-bold">23</div>
+                            <div class="small text-info">
+                                <i class="bi bi-printer"></i> Ready for print
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Role-specific content sections -->
+<div class="row g-4">
+    {% if user.role == 'director' %}
+        <!-- Director: Financial Overview -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-graph-up-arrow me-2"></i>Revenue Trend (Last 6 Months)
+                    </h5>
+                    <a href="{% url 'finance:revenue_reports' %}" class="btn btn-outline-primary btn-sm">Detailed Reports</a>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-4">
+                        <i class="bi bi-graph-up display-4 text-muted"></i>
+                        <p class="mt-3 text-muted">Revenue analytics chart will be displayed here</p>
+                        <small class="text-muted">Connect your financial data to view trends and projections</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif user.role == 'lab_manager' %}
+        <!-- Lab Manager: Revenue Overview -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-receipt me-2"></i>Recent Financial Activity
+                    </h5>
+                    <a href="{% url 'finance:invoices' %}" class="btn btn-outline-primary btn-sm">View All Invoices</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Client</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-secondary">INV-2024-156</span></td>
+                                    <td>Uganda Roads Authority</td>
+                                    <td>UGX 2,450,000</td>
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                    <td>Oct 26, 2024</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">INV-2024-155</span></td>
+                                    <td>Kampala Construction</td>
+                                    <td>UGX 1,800,000</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>Oct 25, 2024</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Office Staff: Recent Invoices -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-receipt me-2"></i>My Recent Invoices
+                    </h5>
+                    <a href="{% url 'finance:invoices' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Invoice ID</th>
+                                    <th>Client</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-secondary">INV-2024-156</span></td>
+                                    <td>NWSC Engineering</td>
+                                    <td>UGX 950,000</td>
+                                    <td><span class="badge bg-success">Paid</span></td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-printer"></i> Receipt
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">INV-2024-154</span></td>
+                                    <td>Metro Construction</td>
+                                    <td>UGX 1,200,000</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-outline-success btn-sm">
+                                            <i class="bi bi-credit-card"></i> Record Payment
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Quick Actions Panel -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if user.role == 'director' %}
+                        <a href="{% url 'finance:new_invoice' %}" class="btn btn-primary">
+                            <i class="bi bi-receipt-cutoff me-2"></i>New Invoice
+                        </a>
+                        <a href="{% url 'finance:unpaid_ageing' %}" class="btn btn-outline-warning">
+                            <i class="bi bi-clock-history me-2"></i>Unpaid Analysis
+                        </a>
+                        <a href="{% url 'finance:credit_notes' %}" class="btn btn-outline-info">
+                            <i class="bi bi-file-earmark-minus me-2"></i>Credit Notes
+                        </a>
+                        <a href="{% url 'finance:statements' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-file-earmark-text me-2"></i>Statements
+                        </a>
+                    {% elif user.role == 'lab_manager' %}
+                        <a href="{% url 'finance:invoices' %}" class="btn btn-primary">
+                            <i class="bi bi-receipt me-2"></i>View Invoices
+                        </a>
+                        <a href="{% url 'finance:revenue_reports' %}" class="btn btn-outline-success">
+                            <i class="bi bi-graph-up-arrow me-2"></i>Revenue Reports
+                        </a>
+                    {% else %}
+                        <a href="{% url 'finance:new_invoice' %}" class="btn btn-primary">
+                            <i class="bi bi-receipt-cutoff me-2"></i>New Invoice
+                        </a>
+                        <a href="{% url 'finance:record_payment' %}" class="btn btn-outline-success">
+                            <i class="bi bi-credit-card me-2"></i>Record Payment
+                        </a>
+                        <a href="{% url 'finance:receipts' %}" class="btn btn-outline-info">
+                            <i class="bi bi-file-earmark-check me-2"></i>Issue Receipt
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Access Level Info -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-2">Your Finance Access:</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% if user.role == 'director' %}
+                            <span class="badge bg-danger">Full Access</span>
+                            <span class="badge bg-info">Analytics</span>
+                            <span class="badge bg-warning">Credit Control</span>
+                        {% elif user.role == 'lab_manager' %}
+                            <span class="badge bg-primary">Revenue Reports</span>
+                            <span class="badge bg-info">Invoice Review</span>
+                        {% else %}
+                            <span class="badge bg-success">Invoice Creation</span>
+                            <span class="badge bg-info">Payment Processing</span>
+                            <span class="badge bg-warning">Receipt Management</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'pricing/base_pricing.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        {% if user.is_director %}
+            <a href="{% url 'pricing:catalog' %}" class="btn btn-primary">
+                <i class="bi bi-collection"></i>
+                Manage Catalog
+            </a>
+        {% endif %}
+        {% if user.is_director or user.is_lab_manager %}
+            <a href="{% url 'pricing:master_price_list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-currency-dollar"></i>
+                Price List
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Access</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% if user.is_director %}
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:catalog' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-collection fs-1 mb-2"></i>
+                                <span>Test Catalog</span>
+                            </a>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:pricing_rules' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-gear fs-1 mb-2"></i>
+                                <span>Pricing Rules</span>
+                            </a>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:discount_schemes' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-percent fs-1 mb-2"></i>
+                                <span>Discounts</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    {% if user.is_director or user.is_lab_manager or user.is_office_staff %}
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:master_price_list' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-currency-dollar fs-1 mb-2"></i>
+                                <span>Price List{% if user.is_office_staff %} <small>(View)</small>{% endif %}</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    {% if user.is_director or user.is_lab_manager %}
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:categories' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-grid-3x3-gap fs-1 mb-2"></i>
+                                <span>Categories</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    {% if user.is_director or user.is_lab_manager or user.is_technician %}
+                        <div class="col-sm-6 col-md-4">
+                            <a href="{% url 'pricing:tests_parameters' %}" class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-list-check fs-1 mb-2"></i>
+                                <span>Tests & Parameters{% if user.is_technician %} <small>(Reference)</small>{% endif %}</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Your Access Level</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                        <i class="bi bi-person-fill text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">{{ user.get_role_display }}</h6>
+                        <small class="text-muted">{{ user.username }}</small>
+                    </div>
+                </div>
+                
+                <div class="border-top pt-3">
+                    <h6 class="mb-2">Pricing Module Permissions:</h6>
+                    <ul class="list-unstyled mb-0">
+                        {% if user.is_director %}
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Full Catalog Management</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Pricing Rules & Discounts</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>All Price Lists</li>
+                        {% elif user.is_lab_manager %}
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Price List Management</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Categories & Tests</li>
+                        {% elif user.is_office_staff %}
+                            <li><i class="bi bi-eye-fill text-info me-2"></i>View Price Lists</li>
+                        {% elif user.is_technician %}
+                            <li><i class="bi bi-eye-fill text-info me-2"></i>View Tests & Parameters</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

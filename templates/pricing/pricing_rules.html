@@ -1,0 +1,255 @@
+{% extends 'pricing/base_pricing.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Create Rule
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-gear"></i>
+            Rule Engine
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Active Pricing Rules</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Rule Name</th>
+                                <th>Type</th>
+                                <th>Condition</th>
+                                <th>Adjustment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>Bulk Testing Discount</strong>
+                                        <small class="text-muted d-block">Volume-based pricing</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Volume</span></td>
+                                <td>Quantity ≥ 10 samples</td>
+                                <td>-15%</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Copy</button>
+                                        <button class="btn btn-outline-warning">Pause</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>Rush Job Surcharge</strong>
+                                        <small class="text-muted d-block">Expedited testing fee</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning text-dark">Timeline</span></td>
+                                <td>Turnaround ≤ 3 days</td>
+                                <td>+50%</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Copy</button>
+                                        <button class="btn btn-outline-warning">Pause</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>Government Rate</strong>
+                                        <small class="text-muted d-block">Special pricing for gov't clients</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">Client Type</span></td>
+                                <td>Client = Government</td>
+                                <td>-20%</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Copy</button>
+                                        <button class="btn btn-outline-warning">Pause</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>Complex Test Premium</strong>
+                                        <small class="text-muted d-block">Advanced testing surcharge</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">Complexity</span></td>
+                                <td>Test Category = Steel</td>
+                                <td>+25%</td>
+                                <td><span class="badge bg-warning text-dark">Paused</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Copy</button>
+                                        <button class="btn btn-outline-success">Activate</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Rule Builder</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-lightbulb me-2"></i>
+                    Use the rule builder to create complex pricing logic based on various conditions.
+                </div>
+                
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Rule Name</label>
+                            <input type="text" class="form-control" placeholder="Enter rule name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rule Type</label>
+                            <select class="form-select">
+                                <option selected>Select type...</option>
+                                <option>Volume Discount</option>
+                                <option>Timeline Surcharge</option>
+                                <option>Client Type Adjustment</option>
+                                <option>Test Complexity</option>
+                                <option>Custom Condition</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Condition</label>
+                            <input type="text" class="form-control" placeholder="e.g., Quantity >= 10">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Price Adjustment</label>
+                            <div class="input-group">
+                                <select class="form-select" style="max-width: 80px;">
+                                    <option>+</option>
+                                    <option>-</option>
+                                </select>
+                                <input type="number" class="form-control" placeholder="15">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary">Save Rule</button>
+                                <button type="button" class="btn btn-outline-secondary">Preview</button>
+                                <button type="button" class="btn btn-outline-danger">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Rule Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-success mb-0">7</h4>
+                            <small class="text-muted">Active Rules</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning mb-0">2</h4>
+                        <small class="text-muted">Paused</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Rule Types</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Volume Discounts</small>
+                        <span class="badge bg-success">3</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Timeline Surcharges</small>
+                        <span class="badge bg-warning text-dark">2</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Client Adjustments</small>
+                        <span class="badge bg-info">2</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>Test Complexity</small>
+                        <span class="badge bg-danger">2</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm">Import Rules</button>
+                    <button class="btn btn-outline-secondary btn-sm">Export Rules</button>
+                    <button class="btn btn-outline-info btn-sm">Rule Templates</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Rule Impact</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>This Month</h6>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 35%"></div>
+                        <div class="progress-bar bg-warning" style="width: 25%"></div>
+                        <div class="progress-bar bg-danger" style="width: 15%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span>Discounts: 35%</span>
+                        <span>Surcharges: 40%</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h6>Average Impact</h6>
+                    <div class="text-center">
+                        <h4 class="text-primary mb-0">+12.5%</h4>
+                        <small class="text-muted">Net pricing adjustment</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

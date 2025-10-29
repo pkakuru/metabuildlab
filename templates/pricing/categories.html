@@ -1,0 +1,216 @@
+{% extends 'pricing/base_pricing.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Add Category
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-repeat"></i>
+            Reorganize
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Test Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-primary">
+                            <div class="card-body text-center">
+                                <i class="bi bi-building fs-1 text-primary mb-2"></i>
+                                <h5 class="card-title">Concrete Testing</h5>
+                                <p class="card-text text-muted small">Compressive strength, workability, and durability tests</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">15 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-success">
+                            <div class="card-body text-center">
+                                <i class="bi bi-globe fs-1 text-success mb-2"></i>
+                                <h5 class="card-title">Soil Testing</h5>
+                                <p class="card-text text-muted small">Geotechnical analysis and soil properties</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">12 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-warning">
+                            <div class="card-body text-center">
+                                <i class="bi bi-pentagon fs-1 text-warning mb-2"></i>
+                                <h5 class="card-title">Aggregate Testing</h5>
+                                <p class="card-text text-muted small">Grading, density, and quality assessments</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-warning text-dark">8 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-danger">
+                            <div class="card-body text-center">
+                                <i class="bi bi-gear fs-1 text-danger mb-2"></i>
+                                <h5 class="card-title">Steel Testing</h5>
+                                <p class="card-text text-muted small">Tensile strength and material properties</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-danger">6 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-info">
+                            <div class="card-body text-center">
+                                <i class="bi bi-droplet fs-1 text-info mb-2"></i>
+                                <h5 class="card-title">Water Testing</h5>
+                                <p class="card-text text-muted small">Quality analysis for construction use</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">4 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card border border-secondary">
+                            <div class="card-body text-center">
+                                <i class="bi bi-question-circle fs-1 text-secondary mb-2"></i>
+                                <h5 class="card-title">Other Tests</h5>
+                                <p class="card-text text-muted small">Specialized and miscellaneous testing</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-secondary">3 Tests</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-secondary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Category Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Quick Stats</h6>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-0">6</h4>
+                                <small class="text-muted">Categories</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success mb-0">48</h4>
+                            <small class="text-muted">Total Tests</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6>Category Actions</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm">Bulk Edit Tests</button>
+                        <button class="btn btn-outline-success btn-sm">Export Categories</button>
+                        <button class="btn btn-outline-warning btn-sm">Price Analysis</button>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div>
+                    <h6>Category Settings</h6>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoSort" checked>
+                        <label class="form-check-label" for="autoSort">
+                            Auto-sort by test count
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showInactive">
+                        <label class="form-check-label" for="showInactive">
+                            Show inactive categories
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item px-0 py-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <small class="fw-medium">Added Steel Testing</small>
+                                <small class="text-muted d-block">2 hours ago</small>
+                            </div>
+                            <span class="badge bg-success">New</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item px-0 py-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <small class="fw-medium">Updated Concrete Tests</small>
+                                <small class="text-muted d-block">1 day ago</small>
+                            </div>
+                            <span class="badge bg-primary">Edit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

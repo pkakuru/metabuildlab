@@ -1,0 +1,298 @@
+{% extends 'config/base_config.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        {% if can_admin %}
+            <button class="btn btn-danger">
+                <i class="bi bi-trash"></i>
+                Clear Old Logs
+            </button>
+        {% endif %}
+        <button class="btn btn-outline-primary">
+            <i class="bi bi-download"></i>
+            Export Logs
+        </button>
+    </div>
+</div>
+
+{% if not can_admin %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        You have view-only access to the audit log.
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">System Activity Log</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" class="form-control" placeholder="Search activities...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Module</th>
+                                <th>Details</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <small>2025-10-28 12:30:15</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-person-fill text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>john.director</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">LOGIN</span></td>
+                                <td><span class="badge bg-secondary">AUTH</span></td>
+                                <td><small>Successful login</small></td>
+                                <td><small>192.168.1.100</small></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>2025-10-28 12:28:42</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-person-fill text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>sarah.manager</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">UPDATE</span></td>
+                                <td><span class="badge bg-warning text-dark">PRICING</span></td>
+                                <td><small>Modified test price: CON-001</small></td>
+                                <td><small>192.168.1.45</small></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>2025-10-28 12:25:18</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-person-fill text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>mike.staff</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">CREATE</span></td>
+                                <td><span class="badge bg-success">SALES</span></td>
+                                <td><small>New quotation created: QUO-2025-001234</small></td>
+                                <td><small>192.168.1.78</small></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>2025-10-28 12:20:03</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-person-fill text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>john.director</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning text-dark">DELETE</span></td>
+                                <td><span class="badge bg-danger">CONFIG</span></td>
+                                <td><small>User account suspended: old.user</small></td>
+                                <td><small>192.168.1.100</small></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>2025-10-28 12:15:27</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-person-fill text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>bob.tech</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">UPDATE</span></td>
+                                <td><span class="badge bg-info">OPERATIONS</span></td>
+                                <td><small>Test results uploaded: JOB-2025-5678</small></td>
+                                <td><small>192.168.1.92</small></td>
+                            </tr>
+                            <tr class="table-warning">
+                                <td>
+                                    <small>2025-10-28 12:10:44</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-dark d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px;">
+                                            <i class="bi bi-question text-white" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        <small><strong>unknown.user</strong></small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">FAILED_LOGIN</span></td>
+                                <td><span class="badge bg-secondary">AUTH</span></td>
+                                <td><small>Failed login attempt (3rd try)</small></td>
+                                <td><small>203.45.67.89</small></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                        <li class="page-item active">
+                            <span class="page-link">1</span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Activity Filters</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Time Range</label>
+                        <select class="form-select">
+                            <option>Last 24 hours</option>
+                            <option>Last 7 days</option>
+                            <option>Last 30 days</option>
+                            <option>Custom range</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Action Type</label>
+                        <select class="form-select" multiple>
+                            <option>LOGIN</option>
+                            <option>LOGOUT</option>
+                            <option>CREATE</option>
+                            <option>UPDATE</option>
+                            <option>DELETE</option>
+                            <option>FAILED_LOGIN</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Module</label>
+                        <select class="form-select" multiple>
+                            <option>AUTH</option>
+                            <option>SALES</option>
+                            <option>OPERATIONS</option>
+                            <option>PRICING</option>
+                            <option>FINANCE</option>
+                            <option>CONFIG</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">User</label>
+                        <input type="text" class="form-control" placeholder="Username">
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <button type="button" class="btn btn-outline-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Activity Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Today's Activity</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Total Actions</small>
+                        <span class="badge bg-primary">247</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Unique Users</small>
+                        <span class="badge bg-success">18</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Failed Logins</small>
+                        <span class="badge bg-warning text-dark">3</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>Security Alerts</small>
+                        <span class="badge bg-danger">1</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-danger btn-sm">Security Report</button>
+                    <button class="btn btn-outline-warning btn-sm">User Activity</button>
+                    <button class="btn btn-outline-info btn-sm">System Health</button>
+                </div>
+            </div>
+        </div>
+        
+        {% if can_admin %}
+            <div class="card mt-3 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <small><strong>Warning:</strong> These actions are irreversible.</small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-danger btn-sm">Clear Logs (30+ days)</button>
+                        <button class="btn btn-outline-danger btn-sm">Archive Logs</button>
+                        <button class="btn btn-outline-warning btn-sm">Export All Logs</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

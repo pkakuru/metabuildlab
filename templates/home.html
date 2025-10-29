@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-person-badge me-2"></i>{{ role_display }}
+                    {% if department %} | {{ department }}{% endif %}
+                </p>
+            </div>
+            <div class="text-end">
+                <small class="text-muted">Last updated: {{ "now"|date:"M d, Y g:i A" }}</small><br>
+                <small class="text-primary">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Access Level: 
+                    {% if accessible_modules|length == 5 %}
+                        Full Access
+                    {% elif accessible_modules|length >= 3 %}
+                        Manager Access
+                    {% else %}
+                        Standard Access
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Role-Specific KPI Cards -->
+    {% for stat in dashboard_stats %}
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: 
+            {% if stat.color == 'primary' %}#007bff
+            {% elif stat.color == 'success' %}#28a745
+            {% elif stat.color == 'warning' %}#ffc107
+            {% elif stat.color == 'danger' %}#dc3545
+            {% elif stat.color == 'info' %}#17a2b8
+            {% else %}#6c757d{% endif %};">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-{{ stat.icon }} text-{{ stat.color }} fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">{{ stat.label }}</div>
+                        <div class="fs-4 fw-bold">{{ stat.value }}</div>
+                        <div class="small text-{{ stat.color }}">
+                            <i class="bi bi-info-circle"></i> Role-specific data
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- Quick Actions -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                        <div class="row g-3">
+                            {% if 'sales' in accessible_modules %}
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#sales" class="btn btn-outline-info">
+                                        <i class="bi bi-person-lines-fill me-2"></i>Sales Management
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if 'operations' in accessible_modules %}
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#operations" class="btn btn-outline-success">
+                                        <i class="bi bi-gear-wide-connected me-2"></i>Lab Operations
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if 'finance' in accessible_modules %}
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#finance" class="btn btn-outline-primary">
+                                        <i class="bi bi-currency-dollar me-2"></i>Finance & Billing
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if 'pricing' in accessible_modules %}
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#pricing" class="btn btn-outline-warning">
+                                        <i class="bi bi-tags me-2"></i>Pricing Setup
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if 'config' in accessible_modules %}
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#config" class="btn btn-outline-danger">
+                                        <i class="bi bi-sliders me-2"></i>System Config
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Universal Actions -->
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <a href="#reports" class="btn btn-outline-secondary">
+                                        <i class="bi bi-bar-chart me-2"></i>My Reports
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Role Access Information -->
+                        <div class="mt-4">
+                            <h6 class="text-muted mb-3">Your Access Level: {{ role_display }}</h6>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for module in accessible_modules %}
+                                            <span class="badge bg-success">{{ module|title }}</span>
+                                        {% empty %}
+                                            <span class="badge bg-warning">Limited Access</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary rounded-circle p-2 text-white">
+                                <i class="bi bi-plus"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">2 hours ago</div>
+                            <div>New project created</div>
+                            <div class="small text-muted">Project Alpha-2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success rounded-circle p-2 text-white">
+                                <i class="bi bi-check"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">4 hours ago</div>
+                            <div>Sales target achieved</div>
+                            <div class="small text-muted">Q4 2024 milestone</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning rounded-circle p-2 text-white">
+                                <i class="bi bi-exclamation"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">1 day ago</div>
+                            <div>System maintenance</div>
+                            <div class="small text-muted">Scheduled downtime completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- System Performance Chart -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up me-2"></i>System Performance Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-graph-up display-1"></i>
+                    <p class="mt-3">Performance charts will be integrated here</p>
+                    <small>Connect your analytics service to view real-time data</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

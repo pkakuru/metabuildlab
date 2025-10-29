@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block sidebar_content %}
+<div class="sidebar-section">
+    <div class="sidebar-section-title">
+        <i class="bi bi-tag-fill"></i>
+        <span>Pricing</span>
+    </div>
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'pricing:dashboard' %}">
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </a>
+        </li>
+        
+        {% comment %} Director Full Access {% endcomment %}
+        {% if user.is_director %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:catalog' %}">
+                    <i class="bi bi-collection"></i>
+                    Catalog
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:master_price_list' %}">
+                    <i class="bi bi-currency-dollar"></i>
+                    Master Price List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:categories' %}">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:tests_parameters' %}">
+                    <i class="bi bi-list-check"></i>
+                    Tests & Parameters
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:search_filter' %}">
+                    <i class="bi bi-search"></i>
+                    Search & Filter
+                </a>
+            </li>
+            
+            <li class="nav-item mt-2">
+                <div class="sidebar-subsection-title">Rules</div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:pricing_rules' %}">
+                    <i class="bi bi-gear"></i>
+                    Pricing Rules
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:discount_schemes' %}">
+                    <i class="bi bi-percent"></i>
+                    Discount Schemes
+                </a>
+            </li>
+        {% endif %}
+        
+        {% comment %} Lab Manager Access {% endcomment %}
+        {% if user.is_lab_manager %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:master_price_list' %}">
+                    <i class="bi bi-currency-dollar"></i>
+                    Master Price List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:categories' %}">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:tests_parameters' %}">
+                    <i class="bi bi-list-check"></i>
+                    Tests & Parameters
+                </a>
+            </li>
+        {% endif %}
+        
+        {% comment %} Office Staff View Only Access {% endcomment %}
+        {% if user.is_office_staff %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:master_price_list' %}">
+                    <i class="bi bi-currency-dollar"></i>
+                    Master Price List
+                    <small class="text-muted">(View Only)</small>
+                </a>
+            </li>
+        {% endif %}
+        
+        {% comment %} Technician View Only Access {% endcomment %}
+        {% if user.is_technician %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'pricing:tests_parameters' %}">
+                    <i class="bi bi-list-check"></i>
+                    Tests & Parameters
+                    <small class="text-muted">(Reference)</small>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar-subsection-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--bs-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.5rem 1rem 0.25rem;
+        border-top: 1px solid var(--bs-border-color);
+        margin-top: 0.5rem;
+    }
+    
+    .nav-link small {
+        display: block;
+        font-size: 0.7rem;
+        margin-top: 0.125rem;
+    }
+</style>
+{% endblock %}

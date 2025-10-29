@@ -1,0 +1,79 @@
+{% extends 'pricing/base_pricing.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Add New Test
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-upload"></i>
+            Import Catalog
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Test Catalog Management</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" placeholder="Search tests...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    This is the Test Catalog page. Here you can manage all available tests and their configurations.
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Test Code</th>
+                                <th>Test Name</th>
+                                <th>Category</th>
+                                <th>Base Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CON-001</td>
+                                <td>Concrete Compressive Strength</td>
+                                <td>Concrete Testing</td>
+                                <td>UGX 25,000</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Copy</button>
+                                        <button class="btn btn-outline-danger">Archive</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- More sample data would go here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

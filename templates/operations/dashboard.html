@@ -1,0 +1,410 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}Operations Dashboard - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-gear-wide-connected me-2"></i>
+                    {% if user.role == 'director' %}
+                        Complete lab operations management and oversight
+                    {% elif user.role == 'lab_manager' %}
+                        Job coordination and results management
+                    {% elif user.role == 'technician' %}
+                        Your personal lab workflow and assignments
+                    {% else %}
+                        Sample intake and basic lab operations
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-info">{{ role_display }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operations KPI Cards based on role -->
+<div class="row g-4 mb-4">
+    {% if user.role == 'director' %}
+        <!-- Director KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-kanban text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Active Jobs</div>
+                            <div class="fs-4 fw-bold">47</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-up"></i> 8 new this week
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #ffc107;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-hourglass-split text-warning fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Pending Results</div>
+                            <div class="fs-4 fw-bold">12</div>
+                            <div class="small text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 3 overdue
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-people text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Active Technicians</div>
+                            <div class="fs-4 fw-bold">8</div>
+                            <div class="small text-info">
+                                <i class="bi bi-check-circle"></i> All available
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #dc3545;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-stopwatch text-danger fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Avg Turnaround</div>
+                            <div class="fs-4 fw-bold">3.2 days</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-down"></i> -0.5 days improved
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif user.role == 'lab_manager' %}
+        <!-- Lab Manager KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-clipboard-check text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Jobs in Progress</div>
+                            <div class="fs-4 fw-bold">31</div>
+                            <div class="small text-success">
+                                <i class="bi bi-arrow-up"></i> 5 new assignments
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #ffc107;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-clipboard2-data text-warning fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Samples Today</div>
+                            <div class="fs-4 fw-bold">24</div>
+                            <div class="small text-info">
+                                <i class="bi bi-clock"></i> 6 processing
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-check2-square text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Ready for Review</div>
+                            <div class="fs-4 fw-bold">9</div>
+                            <div class="small text-primary">
+                                <i class="bi bi-eye"></i> Awaiting approval
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif user.role == 'technician' %}
+        <!-- Technician KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-person-workspace text-primary fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">My Assigned Jobs</div>
+                            <div class="fs-4 fw-bold">7</div>
+                            <div class="small text-primary">
+                                <i class="bi bi-clock"></i> 3 due today
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-check-circle text-success fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Completed Today</div>
+                            <div class="fs-4 fw-bold">3</div>
+                            <div class="small text-success">
+                                <i class="bi bi-trophy"></i> Great progress!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #ffc107;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-pencil-square text-warning fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Pending Entry</div>
+                            <div class="fs-4 fw-bold">4</div>
+                            <div class="small text-warning">
+                                <i class="bi bi-exclamation-circle"></i> Needs results
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Office Staff KPIs -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card" style="border-left-color: #17a2b8;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-clipboard2-data text-info fs-2"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small text-muted">Samples Logged</div>
+                            <div class="fs-4 fw-bold">18</div>
+                            <div class="small text-info">
+                                <i class="bi bi-plus"></i> 5 today
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Role-specific content sections -->
+<div class="row g-4">
+    {% if user.role == 'technician' %}
+        <!-- Technician: My Jobs Overview -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-workspace me-2"></i>My Current Jobs
+                    </h5>
+                    <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Test Type</th>
+                                    <th>Priority</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-secondary">JB-2024-089</span></td>
+                                    <td>Concrete Compressive Strength</td>
+                                    <td><span class="badge bg-danger">High</span></td>
+                                    <td>Oct 28, 2024</td>
+                                    <td><span class="badge bg-warning">Testing</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">JB-2024-087</span></td>
+                                    <td>Soil Classification</td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>Oct 30, 2024</td>
+                                    <td><span class="badge bg-info">Ready</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Managers: Recent Jobs Activity -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-kanban me-2"></i>Recent Lab Activity
+                    </h5>
+                    <a href="{% url 'operations:job_board' %}" class="btn btn-outline-primary btn-sm">Job Board</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Client</th>
+                                    <th>Test Type</th>
+                                    <th>Technician</th>
+                                    <th>Status</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-secondary">JB-2024-091</span></td>
+                                    <td>UNRA</td>
+                                    <td>Asphalt Testing</td>
+                                    <td>John Mukasa</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">JB-2024-090</span></td>
+                                    <td>Kampala Construction</td>
+                                    <td>Concrete Core</td>
+                                    <td>Sarah Nakato</td>
+                                    <td><span class="badge bg-warning">In Progress</span></td>
+                                    <td>4 hours ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Quick Actions Panel -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if user.role == 'technician' %}
+                        <a href="{% url 'operations:my_jobs' %}" class="btn btn-primary">
+                            <i class="bi bi-person-workspace me-2"></i>My Jobs
+                        </a>
+                        <a href="{% url 'operations:results_entry' %}" class="btn btn-outline-success">
+                            <i class="bi bi-pencil-square me-2"></i>Enter Results
+                        </a>
+                        <a href="{% url 'operations:my_attachments' %}" class="btn btn-outline-info">
+                            <i class="bi bi-paperclip me-2"></i>My Files
+                        </a>
+                    {% else %}
+                        <a href="{% url 'operations:samples_intake' %}" class="btn btn-primary">
+                            <i class="bi bi-clipboard2-data me-2"></i>Log Sample
+                        </a>
+                        {% if user.role != 'office_staff' %}
+                        <a href="{% url 'operations:job_board' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-kanban me-2"></i>Job Board
+                        </a>
+                        <a href="{% url 'operations:results_review' %}" class="btn btn-outline-success">
+                            <i class="bi bi-clipboard-check me-2"></i>Review Results
+                        </a>
+                        {% endif %}
+                        {% if user.role == 'director' %}
+                        <a href="{% url 'operations:job_reports' %}" class="btn btn-outline-info">
+                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Access Level Info -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-2">Your Operations Access:</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% if user.role == 'director' %}
+                            <span class="badge bg-danger">Full Control</span>
+                            <span class="badge bg-info">All Reports</span>
+                            <span class="badge bg-warning">Staff Management</span>
+                        {% elif user.role == 'lab_manager' %}
+                            <span class="badge bg-success">Job Management</span>
+                            <span class="badge bg-info">Results Review</span>
+                            <span class="badge bg-warning">Tracking</span>
+                        {% elif user.role == 'technician' %}
+                            <span class="badge bg-primary">Personal Workflow</span>
+                            <span class="badge bg-success">Results Entry</span>
+                        {% else %}
+                            <span class="badge bg-info">Sample Intake</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

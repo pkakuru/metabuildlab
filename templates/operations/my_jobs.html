@@ -1,0 +1,212 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}My Jobs - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">My Jobs</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-person-workspace me-2"></i>Your assigned laboratory tests and current workload
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-primary">Technician Dashboard</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technician Job Status -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-start border-primary border-4">
+            <div class="card-body text-center">
+                <i class="bi bi-list-task text-primary fs-2"></i>
+                <h4 class="mt-2 mb-1">7</h4>
+                <p class="text-muted mb-0">Total Assigned</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-start border-danger border-4">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle text-danger fs-2"></i>
+                <h4 class="mt-2 mb-1">3</h4>
+                <p class="text-muted mb-0">Due Today</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-start border-warning border-4">
+            <div class="card-body text-center">
+                <i class="bi bi-clock text-warning fs-2"></i>
+                <h4 class="mt-2 mb-1">4</h4>
+                <p class="text-muted mb-0">In Progress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-start border-success border-4">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle text-success fs-2"></i>
+                <h4 class="mt-2 mb-1">12</h4>
+                <p class="text-muted mb-0">Completed This Week</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Jobs List -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">My Assigned Jobs</h5>
+            <select class="form-select w-auto">
+                <option>All Jobs</option>
+                <option>Due Today</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Test Type</th>
+                        <th>Client</th>
+                        <th>Samples</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-warning">
+                        <td><span class="badge bg-secondary">JB-2024-089</span></td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Concrete Compressive Strength</span><br>
+                                <small class="text-muted">28-day test</small>
+                            </div>
+                        </td>
+                        <td>Kampala Construction Ltd</td>
+                        <td><span class="badge bg-info">6 cylinders</span></td>
+                        <td><span class="badge bg-danger">High</span></td>
+                        <td class="text-danger">
+                            <div>Oct 28, 2024</div>
+                            <small>Due today!</small>
+                        </td>
+                        <td><span class="badge bg-warning">Testing</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-play-fill"></i> Continue
+                                </button>
+                                <button class="btn btn-outline-success">
+                                    <i class="bi bi-pencil-square"></i> Enter Results
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><span class="badge bg-secondary">JB-2024-087</span></td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Soil Classification</span><br>
+                                <small class="text-muted">AASHTO & USCS</small>
+                            </div>
+                        </td>
+                        <td>NWSC Engineering</td>
+                        <td><span class="badge bg-info">4 samples</span></td>
+                        <td><span class="badge bg-success">Normal</span></td>
+                        <td>
+                            <div>Oct 30, 2024</div>
+                            <small class="text-muted">2 days left</small>
+                        </td>
+                        <td><span class="badge bg-info">Ready to Start</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-success">
+                                    <i class="bi bi-play-fill"></i> Start
+                                </button>
+                                <button class="btn btn-outline-info">
+                                    <i class="bi bi-eye"></i> View
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="table-success">
+                        <td><span class="badge bg-secondary">JB-2024-086</span></td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Asphalt Marshall Test</span><br>
+                                <small class="text-muted">Stability & Flow</small>
+                            </div>
+                        </td>
+                        <td>Uganda Roads Authority</td>
+                        <td><span class="badge bg-info">8 specimens</span></td>
+                        <td><span class="badge bg-success">Normal</span></td>
+                        <td>
+                            <div>Oct 29, 2024</div>
+                            <small class="text-success">Completed early</small>
+                        </td>
+                        <td><span class="badge bg-success">Completed</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View Results
+                                </button>
+                                <button class="btn btn-outline-success">
+                                    <i class="bi bi-download"></i> Report
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Tips for Technicians -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-lightbulb text-warning me-2"></i>Quick Tips for Efficient Lab Work
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                            <small>Always check sample preparation requirements before starting</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex">
+                            <i class="bi bi-clock text-info me-2 mt-1"></i>
+                            <small>Update job status regularly for better tracking</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex">
+                            <i class="bi bi-camera text-primary me-2 mt-1"></i>
+                            <small>Take photos of samples before and after testing</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

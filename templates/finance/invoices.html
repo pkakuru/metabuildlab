@@ -1,0 +1,274 @@
+{% extends 'finance/base_finance.html' %}
+
+{% block title %}All Invoices - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">{{ page_title }}</h1>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-receipt me-2"></i>Manage all client invoices and billing records
+                </p>
+            </div>
+            <div>
+                {% if user.role != 'lab_manager' %}
+                <a href="{% url 'finance:new_invoice' %}" class="btn btn-primary">
+                    <i class="bi bi-plus me-2"></i>New Invoice
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Status Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Total Invoices</div>
+                        <div class="h4 fw-bold mb-0">2,456</div>
+                    </div>
+                    <i class="bi bi-receipt text-primary fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-success border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Paid</div>
+                        <div class="h4 fw-bold mb-0 text-success">2,145</div>
+                    </div>
+                    <i class="bi bi-check-circle text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-warning border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Pending</div>
+                        <div class="h4 fw-bold mb-0 text-warning">287</div>
+                    </div>
+                    <i class="bi bi-hourglass-split text-warning fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-danger border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Overdue</div>
+                        <div class="h4 fw-bold mb-0 text-danger">24</div>
+                    </div>
+                    <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoices Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">All Invoices</h5>
+            </div>
+            <div class="col-auto">
+                <div class="input-group">
+                    <select class="form-select">
+                        <option>All Status</option>
+                        <option>Paid</option>
+                        <option>Pending</option>
+                        <option>Overdue</option>
+                        <option>Draft</option>
+                    </select>
+                    <input type="text" class="form-control" placeholder="Search invoices...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Invoice ID</th>
+                        <th>Client</th>
+                        <th>Test Services</th>
+                        <th>Amount (UGX)</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">INV-2024-156</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    URA
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Uganda Roads Authority</div>
+                                    <small class="text-muted">procurement@unra.go.ug</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Asphalt Testing</span><br>
+                                <small class="text-muted">Marshall Stability Tests</small>
+                            </div>
+                        </td>
+                        <td class="fw-bold">2,450,000</td>
+                        <td>Oct 20, 2024</td>
+                        <td class="text-success">Nov 5, 2024</td>
+                        <td><span class="badge bg-success">Paid</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Invoice">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" title="Print Receipt">
+                                    <i class="bi bi-printer"></i>
+                                </button>
+                                <button class="btn btn-outline-info" title="Download PDF">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">INV-2024-155</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    KC
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Kampala Construction Ltd</div>
+                                    <small class="text-muted">finance@kampalaconst.co.ug</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Concrete Testing</span><br>
+                                <small class="text-muted">Compressive Strength Analysis</small>
+                            </div>
+                        </td>
+                        <td class="fw-bold">1,800,000</td>
+                        <td>Oct 18, 2024</td>
+                        <td class="text-warning">Nov 2, 2024</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Invoice">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                {% if user.role != 'lab_manager' %}
+                                <button class="btn btn-outline-success" title="Record Payment">
+                                    <i class="bi bi-credit-card"></i>
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-outline-secondary" title="Send Reminder">
+                                    <i class="bi bi-envelope"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="table-danger">
+                        <td>
+                            <span class="badge bg-secondary">INV-2024-142</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-danger text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                    MC
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Metro Construction</div>
+                                    <small class="text-muted">billing@metroconstruction.ug</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span class="fw-medium">Soil Analysis</span><br>
+                                <small class="text-muted">Foundation Testing</small>
+                            </div>
+                        </td>
+                        <td class="fw-bold">950,000</td>
+                        <td>Sep 15, 2024</td>
+                        <td class="text-danger">Oct 15, 2024</td>
+                        <td><span class="badge bg-danger">Overdue</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="View Invoice">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                {% if user.role == 'director' %}
+                                <button class="btn btn-outline-danger" title="Send Final Notice">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-outline-warning" title="Contact Client">
+                                    <i class="bi bi-telephone"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

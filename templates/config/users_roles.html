@@ -1,0 +1,264 @@
+{% extends 'config/base_config.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary">
+            <i class="bi bi-person-plus"></i>
+            Add New User
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-shield-plus"></i>
+            Create Role
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">User Management</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" class="form-control" placeholder="Search users...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-person-fill text-white small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">John Director</div>
+                                            <small class="text-muted">john.director@metabuildlab.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">Director</span></td>
+                                <td>Management</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>2 hours ago</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Permissions</button>
+                                        <button class="btn btn-outline-warning">Suspend</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-person-fill text-white small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Sarah Manager</div>
+                                            <small class="text-muted">sarah.manager@metabuildlab.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Lab Manager</span></td>
+                                <td>Laboratory</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>1 hour ago</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Permissions</button>
+                                        <button class="btn btn-outline-warning">Suspend</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-person-fill text-white small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Mike Staff</div>
+                                            <small class="text-muted">mike.staff@metabuildlab.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">Office Staff</span></td>
+                                <td>Administration</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>30 minutes ago</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Permissions</button>
+                                        <button class="btn btn-outline-warning">Suspend</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-person-fill text-white small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Bob Technician</div>
+                                            <small class="text-muted">bob.tech@metabuildlab.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-secondary">Technician</span></td>
+                                <td>Laboratory</td>
+                                <td><span class="badge bg-warning text-dark">Inactive</span></td>
+                                <td>2 days ago</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary">Edit</button>
+                                        <button class="btn btn-outline-secondary">Permissions</button>
+                                        <button class="btn btn-outline-success">Activate</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Role Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0">24</h4>
+                            <small class="text-muted">Total Users</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">22</h4>
+                        <small class="text-muted">Active</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>By Role</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Directors</small>
+                        <span class="badge bg-danger">2</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Lab Managers</small>
+                        <span class="badge bg-success">4</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>Office Staff</small>
+                        <span class="badge bg-info">6</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>Technicians</small>
+                        <span class="badge bg-secondary">12</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm">Export User List</button>
+                    <button class="btn btn-outline-secondary btn-sm">Bulk Actions</button>
+                    <button class="btn btn-outline-info btn-sm">Role Permissions</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick User Actions</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Create New User</label>
+                        <input type="email" class="form-control" placeholder="user@metabuildlab.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assign Role</label>
+                        <select class="form-select">
+                            <option>Select role...</option>
+                            <option>Director</option>
+                            <option>Lab Manager</option>
+                            <option>Office Staff</option>
+                            <option>Technician</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" placeholder="Department name">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent User Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item px-0 py-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <small class="fw-medium">New user registered</small>
+                                <small class="text-muted d-block">jane.tech - 1 hour ago</small>
+                            </div>
+                            <span class="badge bg-success">New</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item px-0 py-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <small class="fw-medium">Role updated</small>
+                                <small class="text-muted d-block">mike.staff promoted - 3 hours ago</small>
+                            </div>
+                            <span class="badge bg-primary">Update</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
