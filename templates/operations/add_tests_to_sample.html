@@ -1,0 +1,263 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Sample
+        </a>
+        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-primary">
+            <i class="bi bi-list"></i>
+            All Samples
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Add Tests to Sample</h5>
+                <small class="text-muted">Sample: {{ sample.sample_id }} - {{ sample.client.name }}</small>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-clipboard-check"></i> Test Selection
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.test_item.id_for_label }}" class="form-label">Select Test *</label>
+                            {{ form.test_item }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.quantity_requested.id_for_label }}" class="form-label">Quantity Requested *</label>
+                                {{ form.quantity_requested }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.special_requirements.id_for_label }}" class="form-label">Special Requirements</label>
+                            {{ form.special_requirements }}
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i>
+                            Add Test to Sample
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Current Tests Card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Current Tests for This Sample</h5>
+            </div>
+            <div class="card-body">
+                {% if sample.requested_tests.all %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Test Code</th>
+                                    <th>Test Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>TAT</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for test_item in sample.requested_tests.all %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-primary">{{ test_item.display_code }}</span>
+                                        </td>
+                                        <td>{{ test_item.test_name }}</td>
+                                        <td>
+                                            <small class="text-muted">{{ test_item.category.name }}</small>
+                                        </td>
+                                        <td>{{ test_item.formatted_price }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ test_item.tat_days }} days</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">Pending</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-clipboard-x display-4"></i>
+                        <p class="mt-2">No tests assigned to this sample yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Sample Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sample Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm">
+                    <tr>
+                        <td class="fw-bold">Sample ID:</td>
+                        <td>{{ sample.sample_id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Client:</td>
+                        <td>{{ sample.client.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Type:</td>
+                        <td>{{ sample.sample_type }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Quantity:</td>
+                        <td>{{ sample.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Status:</td>
+                        <td>
+                            {% if sample.status == 'received' %}
+                                <span class="badge bg-info">{{ sample.get_status_display }}</span>
+                            {% elif sample.status == 'in_progress' %}
+                                <span class="badge bg-warning">{{ sample.get_status_display }}</span>
+                            {% elif sample.status == 'testing' %}
+                                <span class="badge bg-primary">{{ sample.get_status_display }}</span>
+                            {% elif sample.status == 'completed' %}
+                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                            {% elif sample.status == 'reported' %}
+                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                            {% elif sample.status == 'cancelled' %}
+                                <span class="badge bg-danger">{{ sample.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Priority:</td>
+                        <td>
+                            <span class="badge bg-{% if sample.priority == 'normal' %}light text-dark{% elif sample.priority == 'urgent' %}warning{% else %}danger{% endif %}">
+                                {{ sample.get_priority_display }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="mt-3">
+                    <h6 class="text-primary">Description</h6>
+                    <p class="small text-muted">{{ sample.sample_description|truncatechars:100 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Categories Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Available Test Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-success">Soil Testing</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-success"></i> Physical Properties</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Engineering Properties</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Chemical Tests</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Field Tests</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Concrete Testing</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-primary"></i> Compressive Strength</li>
+                        <li><i class="bi bi-check-circle text-primary"></i> Workability Tests</li>
+                        <li><i class="bi bi-check-circle text-primary"></i> Durability Tests</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-warning">Aggregate Testing</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-warning"></i> Grading Analysis</li>
+                        <li><i class="bi bi-check-circle text-warning"></i> Density Tests</li>
+                        <li><i class="bi bi-check-circle text-warning"></i> Quality Assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Guidelines Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Adding Tests Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> Important Notes
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Select tests appropriate for the sample type</li>
+                        <li>Consider sample quantity requirements</li>
+                        <li>Check turnaround times for scheduling</li>
+                        <li>Add special requirements if needed</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> Sample Requirements
+                    </h6>
+                    <p class="mb-0 small">
+                        Ensure the sample meets the minimum requirements for the selected tests.
+                        Check the test details for specific sample requirements.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const testSelect = document.getElementById('{{ form.test_item.id_for_label }}');
+    const quantityInput = document.getElementById('{{ form.quantity_requested.id_for_label }}');
+    
+    // Set default quantity to 1
+    if (quantityInput && !quantityInput.value) {
+        quantityInput.value = 1;
+    }
+    
+    // Add change event listener to test select
+    if (testSelect) {
+        testSelect.addEventListener('change', function() {
+            // You can add dynamic behavior here if needed
+            // For example, updating special requirements based on test selection
+        });
+    }
+});
+</script>
+{% endblock %}

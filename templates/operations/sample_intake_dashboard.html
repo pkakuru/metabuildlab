@@ -1,0 +1,307 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            New Sample Intake
+        </a>
+        <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success">
+            <i class="bi bi-lightning"></i>
+            Quick Intake
+        </a>
+        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-list"></i>
+            All Samples
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #007bff;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-clipboard2-data text-primary fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Total Samples Received</div>
+                        <div class="fs-4 fw-bold">{{ total_samples_received }}</div>
+                        <div class="small text-primary">
+                            <i class="bi bi-person"></i> By {{ user.get_full_name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #28a745;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-calendar-day text-success fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Samples Today</div>
+                        <div class="fs-4 fw-bold">{{ samples_today }}</div>
+                        <div class="small text-success">
+                            <i class="bi bi-clock"></i> {{ "now"|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #ffc107;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-hourglass-split text-warning fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Pending Samples</div>
+                        <div class="fs-4 fw-bold">{{ pending_samples }}</div>
+                        <div class="small text-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Awaiting completion
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card" style="border-left-color: #17a2b8;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-person-workspace text-info fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted">Your Role</div>
+                        <div class="fs-4 fw-bold">{{ user.get_role_display }}</div>
+                        <div class="small text-info">
+                            <i class="bi bi-check-circle"></i> Sample intake authorized
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Recent Samples -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Recent Samples Received</h5>
+                        <small class="text-muted">Your latest sample intake activities</small>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if recent_samples %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sample ID</th>
+                                    <th>Client</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Received</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in recent_samples %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-primary">{{ sample.sample_id }}</span>
+                                        </td>
+                                        <td>{{ sample.client.name }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ sample.sample_type }}</span>
+                                        </td>
+                                        <td>
+                                            {% if sample.status == 'received' %}
+                                                <span class="badge bg-info">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'in_progress' %}
+                                                <span class="badge bg-warning">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'testing' %}
+                                                <span class="badge bg-primary">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'completed' %}
+                                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'reported' %}
+                                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'cancelled' %}
+                                                <span class="badge bg-danger">{{ sample.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div>{{ sample.received_date|date:"M d, Y" }}</div>
+                                            <small class="text-muted">{{ sample.received_date|time:"H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'operations:add_tests_to_sample' sample.sample_id %}" class="btn btn-sm btn-outline-success" title="Add Tests">
+                                                    <i class="bi bi-plus"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox display-4"></i>
+                        <h5 class="mt-3">No Samples Received Yet</h5>
+                        <p>Start by receiving your first sample.</p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> New Sample Intake
+                            </a>
+                            <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success">
+                                <i class="bi bi-lightning"></i> Quick Intake
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sample Intake Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> New Sample Intake
+                    </a>
+                    <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success">
+                        <i class="bi bi-lightning"></i> Quick Intake
+                    </a>
+                    <a href="{% url 'operations:client_management' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-people"></i> Manage Clients
+                    </a>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-list"></i> All Samples
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Intake Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Intake Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-success">Quick Intake</h6>
+                    <p class="small text-muted">
+                        Use for walk-in clients or urgent samples. Minimal information required.
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Full Intake</h6>
+                    <p class="small text-muted">
+                        Complete sample information with test assignments and special instructions.
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-info">Sample ID</h6>
+                    <p class="small text-muted">
+                        Automatically generated in MBL{YYYY}{MM}{####} format.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Role-Specific Info -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Your Access Level</h5>
+            </div>
+            <div class="card-body">
+                {% if user.role == 'technician' %}
+                    <div class="alert alert-primary">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-person-workspace"></i> Technician Access
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Receive samples</li>
+                            <li>Enter test results</li>
+                            <li>Upload attachments</li>
+                            <li>Track assigned jobs</li>
+                        </ul>
+                    </div>
+                {% elif user.role == 'office_staff' %}
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-clipboard2-data"></i> Office Staff Access
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Receive samples</li>
+                            <li>Manage clients</li>
+                            <li>Track sample status</li>
+                            <li>Coordinate with lab</li>
+                        </ul>
+                    </div>
+                {% elif user.role == 'lab_manager' %}
+                    <div class="alert alert-success">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-gear"></i> Lab Manager Access
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Full sample management</li>
+                            <li>Job coordination</li>
+                            <li>Results review</li>
+                            <li>Team oversight</li>
+                        </ul>
+                    </div>
+                {% elif user.role == 'director' %}
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-shield-check"></i> Director Access
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Complete system access</li>
+                            <li>All operations</li>
+                            <li>Reports and analytics</li>
+                            <li>System configuration</li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

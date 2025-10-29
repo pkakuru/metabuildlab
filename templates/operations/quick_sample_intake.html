@@ -1,0 +1,191 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Samples
+        </a>
+        <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary">
+            <i class="bi bi-clipboard"></i>
+            Full Intake Form
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i> Quick Sample Intake
+                </h5>
+                <small>For walk-in clients and urgent sample reception</small>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Client Information -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-person"></i> Client Information
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.client_name.id_for_label }}" class="form-label">Client Name *</label>
+                            {{ form.client_name }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.contact_phone.id_for_label }}" class="form-label">Phone Number</label>
+                            {{ form.contact_phone }}
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Information -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-box"></i> Sample Information
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.sample_type.id_for_label }}" class="form-label">Sample Type *</label>
+                            {{ form.sample_type }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.sample_description.id_for_label }}" class="form-label">Sample Description *</label>
+                            {{ form.sample_description }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity *</label>
+                                {{ form.quantity }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                                {{ form.priority }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i>
+                            Receive Sample Quickly
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Quick Intake Info -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Intake Process</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> What happens next?
+                    </h6>
+                    <ol class="mb-0 small">
+                        <li>Sample gets a unique ID automatically</li>
+                        <li>Client is created or found in system</li>
+                        <li>Sample is marked as "Received"</li>
+                        <li>You can add tests later from sample details</li>
+                    </ol>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> Note
+                    </h6>
+                    <p class="mb-0 small">
+                        This is a simplified intake process. For complete sample information, 
+                        use the <a href="{% url 'operations:new_sample_intake' %}" class="alert-link">Full Intake Form</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Intake Benefits</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-success">Fast Processing</h6>
+                    <p class="small text-muted">Get samples into the system quickly for walk-in clients</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-info">Minimal Information</h6>
+                    <p class="small text-muted">Only essential details required to start the process</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-warning">Add Details Later</h6>
+                    <p class="small text-muted">Tests and additional information can be added after intake</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Automatic ID</h6>
+                    <p class="small text-muted">Sample ID generated automatically in MBL format</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">When to Use Quick Intake</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Walk-in clients with urgent samples
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Courier deliveries during busy periods
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        When detailed information is not immediately available
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Emergency or rush samples
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-clipboard"></i> Full Intake Form
+                    </a>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> View All Samples
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

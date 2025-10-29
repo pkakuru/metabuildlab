@@ -24,13 +24,79 @@
     </div>
 </div>
 
-<div class="row mb-3">
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search & Filter</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search Tests</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ search_query }}" placeholder="Search by test name, code, or method...">
+            </div>
+            <div class="col-md-2">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="subcategory" class="form-label">Subcategory</label>
+                <select class="form-select" id="subcategory" name="subcategory">
+                    <option value="">All Subcategories</option>
+                    {% for subcategory in subcategories %}
+                        <option value="{{ subcategory.id }}" {% if subcategory_filter == subcategory.id|stringformat:"s" %}selected{% endif %}>
+                            {{ subcategory.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sample_type" class="form-label">Sample Type</label>
+                <select class="form-select" id="sample_type" name="sample_type">
+                    <option value="">All Types</option>
+                    {% for sample_type in sample_types %}
+                        <option value="{{ sample_type }}" {% if sample_type_filter == sample_type %}selected{% endif %}>
+                            {{ sample_type }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="active" class="form-label">Status</label>
+                <select class="form-select" id="active" name="active">
+                    <option value="">All</option>
+                    <option value="true" {% if active_filter == "true" %}selected{% endif %}>Active Only</option>
+                    <option value="false" {% if active_filter == "false" %}selected{% endif %}>Inactive Only</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <a href="{% url 'pricing:master_price_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h5 class="card-title mb-0">Current Price List</h5>
+                        <h5 class="card-title mb-0">Master Price List</h5>
+                        <small class="text-muted">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ total_items }} tests</small>
                     </div>
                     <div class="col-auto">
                         {% if not can_edit %}
@@ -39,62 +105,118 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
                             <tr>
-                                <th>Test Code</th>
+                                <th>Code</th>
                                 <th>Test Name</th>
                                 <th>Category</th>
-                                <th>Unit Price (UGX)</th>
-                                <th>Effective Date</th>
+                                <th>Method/Standard</th>
+                                <th>Price</th>
+                                <th>TAT</th>
+                                <th>Status</th>
                                 {% if can_edit %}
                                     <th>Actions</th>
                                 {% endif %}
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>CON-001</td>
-                                <td>Concrete Compressive Strength</td>
-                                <td>Concrete Testing</td>
-                                <td>25,000</td>
-                                <td>2025-01-01</td>
-                                {% if can_edit %}
+                            {% for item in test_items %}
+                                <tr>
                                     <td>
-                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <span class="fw-bold text-primary">{{ item.display_code }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ item.system_code }}</small>
                                     </td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td>SOIL-001</td>
-                                <td>Soil Compaction Test</td>
-                                <td>Soil Testing</td>
-                                <td>30,000</td>
-                                <td>2025-01-01</td>
-                                {% if can_edit %}
                                     <td>
-                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <div class="fw-semibold">{{ item.test_name }}</div>
+                                        {% if item.notes %}
+                                            <small class="text-muted">{{ item.notes|truncatechars:50 }}</small>
+                                        {% endif %}
                                     </td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td>AGG-001</td>
-                                <td>Aggregate Grading</td>
-                                <td>Aggregate Testing</td>
-                                <td>18,000</td>
-                                <td>2025-01-01</td>
-                                {% if can_edit %}
                                     <td>
-                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <div class="text-muted">{{ item.category.name }}</div>
+                                        <small class="text-info">{{ item.subcategory.name }}</small>
                                     </td>
-                                {% endif %}
-                            </tr>
+                                    <td>
+                                        <small>{{ item.method_standard }}</small>
+                                        <br>
+                                        <span class="badge bg-secondary">{{ item.sample_type }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-success">{{ item.formatted_price }}</div>
+                                        <small class="text-muted">{{ item.unit }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ item.tat_days }} days</span>
+                                    </td>
+                                    <td>
+                                        {% if item.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    {% if can_edit %}
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="{% if can_edit %}8{% else %}7{% endif %}" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="bi bi-search display-4"></i>
+                                            <p class="mt-2">No tests found matching your criteria.</p>
+                                            <a href="{% url 'pricing:master_price_list' %}" class="btn btn-outline-primary btn-sm">
+                                                Clear Filters
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Price list pagination">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if subcategory_filter %}&subcategory={{ subcategory_filter }}{% endif %}{% if sample_type_filter %}&sample_type={{ sample_type_filter }}{% endif %}{% if active_filter %}&active={{ active_filter }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if subcategory_filter %}&subcategory={{ subcategory_filter }}{% endif %}{% if sample_type_filter %}&sample_type={{ sample_type_filter }}{% endif %}{% if active_filter %}&active={{ active_filter }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if subcategory_filter %}&subcategory={{ subcategory_filter }}{% endif %}{% if sample_type_filter %}&sample_type={{ sample_type_filter }}{% endif %}{% if active_filter %}&active={{ active_filter }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if subcategory_filter %}&subcategory={{ subcategory_filter }}{% endif %}{% if sample_type_filter %}&sample_type={{ sample_type_filter }}{% endif %}{% if active_filter %}&active={{ active_filter }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
         </div>
     </div>
     
@@ -107,12 +229,12 @@
                 <div class="row text-center">
                     <div class="col-6">
                         <div class="border-end">
-                            <h4 class="text-primary mb-0">124</h4>
+                            <h4 class="text-primary mb-0">{{ total_items }}</h4>
                             <small class="text-muted">Total Tests</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <h4 class="text-success mb-0">8</h4>
+                        <h4 class="text-success mb-0">{{ categories.count }}</h4>
                         <small class="text-muted">Categories</small>
                     </div>
                 </div>
@@ -120,29 +242,21 @@
                 <hr>
                 
                 <div class="mb-3">
-                    <label class="form-label">Filter by Category</label>
-                    <select class="form-select">
-                        <option selected>All Categories</option>
-                        <option>Concrete Testing</option>
-                        <option>Soil Testing</option>
-                        <option>Aggregate Testing</option>
-                        <option>Steel Testing</option>
-                    </select>
+                    <h6 class="text-muted">Categories Breakdown</h6>
+                    {% for category in categories %}
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small>{{ category.name }}</small>
+                            <span class="badge bg-light text-dark">{{ category.test_count }}</span>
+                        </div>
+                    {% endfor %}
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">Price Range (UGX)</label>
-                    <div class="row">
-                        <div class="col-6">
-                            <input type="number" class="form-control form-control-sm" placeholder="Min">
-                        </div>
-                        <div class="col-6">
-                            <input type="number" class="form-control form-control-sm" placeholder="Max">
-                        </div>
-                    </div>
+                    <h6 class="text-muted">Sample Types</h6>
+                    {% for sample_type in sample_types %}
+                        <span class="badge bg-secondary me-1 mb-1">{{ sample_type }}</span>
+                    {% endfor %}
                 </div>
-                
-                <button class="btn btn-outline-primary btn-sm w-100">Apply Filters</button>
             </div>
         </div>
         
@@ -156,6 +270,7 @@
                         <button class="btn btn-success btn-sm">Bulk Price Update</button>
                         <button class="btn btn-warning btn-sm">Apply Discount</button>
                         <button class="btn btn-info btn-sm">Price History</button>
+                        <button class="btn btn-outline-primary btn-sm">Import New Prices</button>
                     </div>
                 </div>
             </div>

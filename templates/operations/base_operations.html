@@ -15,9 +15,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
                     <i class="bi bi-clipboard2-data"></i>
-                    <span>Samples Intake</span>
+                    <span>Sample Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-list"></i>
+                    <span>All Samples</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -73,9 +79,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
                     <i class="bi bi-clipboard2-data"></i>
-                    <span>Samples Intake</span>
+                    <span>Sample Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-list"></i>
+                    <span>All Samples</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -103,6 +115,26 @@
 
 {% elif user.role == 'technician' %}
     <!-- 🔹 Technician - Personal Workflow -->
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Sample Intake</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
+                    <i class="bi bi-clipboard2-data"></i>
+                    <span>Sample Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-list"></i>
+                    <span>All Samples</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
     <div class="sidebar-section">
         <h6 class="sidebar-section-title">My Work</h6>
         <ul class="nav flex-column">
@@ -144,12 +176,24 @@
 {% elif user.role == 'office_staff' %}
     <!-- 🔹 Office Staff - Limited Operations Access -->
     <div class="sidebar-section">
-        <h6 class="sidebar-section-title">Sample Management</h6>
+        <h6 class="sidebar-section-title">Sample Intake</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
                     <i class="bi bi-clipboard2-data"></i>
-                    <span>Samples Intake</span>
+                    <span>Sample Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-list"></i>
+                    <span>All Samples</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:client_management' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Client Management</span>
                 </a>
             </li>
         </ul>

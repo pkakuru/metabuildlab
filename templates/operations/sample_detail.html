@@ -1,0 +1,424 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Samples
+        </a>
+        <a href="{% url 'operations:add_tests_to_sample' sample.sample_id %}" class="btn btn-success">
+            <i class="bi bi-plus"></i>
+            Add Tests
+        </a>
+        <button class="btn btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer"></i>
+            Print
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Sample Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Sample Information</h5>
+                    </div>
+                    <div class="col-auto">
+                        {% if sample.status == 'received' %}
+                            <span class="badge bg-info fs-6">{{ sample.get_status_display }}</span>
+                        {% elif sample.status == 'in_progress' %}
+                            <span class="badge bg-warning fs-6">{{ sample.get_status_display }}</span>
+                        {% elif sample.status == 'testing' %}
+                            <span class="badge bg-primary fs-6">{{ sample.get_status_display }}</span>
+                        {% elif sample.status == 'completed' %}
+                            <span class="badge bg-success fs-6">{{ sample.get_status_display }}</span>
+                        {% elif sample.status == 'reported' %}
+                            <span class="badge bg-success fs-6">{{ sample.get_status_display }}</span>
+                        {% elif sample.status == 'cancelled' %}
+                            <span class="badge bg-danger fs-6">{{ sample.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Sample ID:</td>
+                                <td>{{ sample.sample_id }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Client Reference:</td>
+                                <td>{{ sample.client_reference|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Sample Type:</td>
+                                <td>{{ sample.sample_type }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Quantity:</td>
+                                <td>{{ sample.quantity }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Condition:</td>
+                                <td>
+                                    <span class="badge bg-{% if sample.sample_condition == 'good' %}success{% elif sample.sample_condition == 'damaged' %}warning{% else %}danger{% endif %}">
+                                        {{ sample.get_sample_condition_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Priority:</td>
+                                <td>
+                                    <span class="badge bg-{% if sample.priority == 'normal' %}light text-dark{% elif sample.priority == 'urgent' %}warning{% else %}danger{% endif %}">
+                                        {{ sample.get_priority_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Received Date:</td>
+                                <td>{{ sample.received_date|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Received By:</td>
+                                <td>{{ sample.received_by.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Collection Location:</td>
+                                <td>{{ sample.location_collected|default:"Not specified" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Collection Date:</td>
+                                <td>{{ sample.collection_date|date:"M d, Y"|default:"Not specified" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary">Sample Description</h6>
+                        <p class="border rounded p-3 bg-light">{{ sample.sample_description }}</p>
+                    </div>
+                </div>
+                
+                {% if sample.special_instructions %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-warning">Special Instructions</h6>
+                        <p class="border rounded p-3 bg-warning bg-opacity-10">{{ sample.special_instructions }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if sample.notes %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-info">Notes</h6>
+                        <p class="border rounded p-3 bg-info bg-opacity-10">{{ sample.notes }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Client Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Client Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Client Name:</td>
+                                <td>{{ sample.client.name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Contact Person:</td>
+                                <td>{{ sample.client.contact_person|default:"Not specified" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Email:</td>
+                                <td>{{ sample.client.email|default:"Not provided" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="fw-bold">Phone:</td>
+                                <td>{{ sample.client.phone|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Company Registration:</td>
+                                <td>{{ sample.client.company_registration|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Client Since:</td>
+                                <td>{{ sample.client.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                {% if sample.client.address %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary">Address</h6>
+                        <p class="border rounded p-3 bg-light">{{ sample.client.address }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Tests Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Requested Tests</h5>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-primary fs-6">{{ sample_tests.count }} Tests</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if sample_tests %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Test Code</th>
+                                    <th>Test Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>TAT</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample_test in sample_tests %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-primary">{{ sample_test.test_item.display_code }}</span>
+                                        </td>
+                                        <td>{{ sample_test.test_item.test_name }}</td>
+                                        <td>
+                                            <small class="text-muted">{{ sample_test.test_item.category.name }}</small>
+                                        </td>
+                                        <td>{{ sample_test.test_item.formatted_price }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ sample_test.test_item.tat_days }} days</span>
+                                        </td>
+                                        <td>
+                                            {% if sample_test.is_completed %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-clipboard-x display-4"></i>
+                        <p class="mt-2">No tests assigned to this sample yet.</p>
+                        <a href="{% url 'operations:add_tests_to_sample' sample.sample_id %}" class="btn btn-success">
+                            <i class="bi bi-plus"></i> Add Tests
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Status History Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Status History</h5>
+            </div>
+            <div class="card-body">
+                {% if status_history %}
+                    <div class="timeline">
+                        {% for history in status_history %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {% if history.old_status %}
+                                                    {{ history.get_old_status_display }} → {{ history.get_new_status_display }}
+                                                {% else %}
+                                                    {{ history.get_new_status_display }}
+                                                {% endif %}
+                                            </h6>
+                                            {% if history.notes %}
+                                                <p class="text-muted small mb-1">{{ history.notes }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted">{{ history.changed_at|date:"M d, Y H:i" }}</small>
+                                    </div>
+                                    <small class="text-muted">Changed by: {{ history.changed_by.get_full_name }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-clock-history"></i>
+                        <p class="mt-2">No status history available.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Status Update Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Update Status</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_status" value="1">
+                    
+                    <div class="mb-3">
+                        <label for="{{ status_form.status.id_for_label }}" class="form-label">Status</label>
+                        {{ status_form.status }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ status_form.priority.id_for_label }}" class="form-label">Priority</label>
+                        {{ status_form.priority }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status_notes" class="form-label">Notes</label>
+                        <textarea name="status_notes" class="form-control" rows="3" placeholder="Notes about this status change"></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-arrow-up-circle"></i>
+                            Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sample Summary Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sample Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0">{{ sample.total_tests }}</h4>
+                            <small class="text-muted">Total Tests</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">
+                            {% if sample.estimated_completion_date %}
+                                {{ sample.estimated_completion_date|date:"M d" }}
+                            {% else %}
+                                TBD
+                            {% endif %}
+                        </h4>
+                        <small class="text-muted">Est. Completion</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Delivery Information</h6>
+                    <p class="small mb-1">
+                        <strong>Method:</strong> {{ sample.delivery_method|default:"Not specified" }}
+                    </p>
+                    {% if sample.courier_details %}
+                        <p class="small mb-0">
+                            <strong>Details:</strong> {{ sample.courier_details }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:add_tests_to_sample' sample.sample_id %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus"></i> Add Tests
+                    </a>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> All Samples
+                    </a>
+                    <button class="btn btn-outline-primary btn-sm" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: #007bff;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #007bff;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #007bff;
+}
+</style>
+{% endblock %}

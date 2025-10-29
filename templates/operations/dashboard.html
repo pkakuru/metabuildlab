@@ -353,8 +353,13 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
+                    <!-- Sample Intake - Available to all roles -->
+                    <a href="{% url 'operations:sample_intake_dashboard' %}" class="btn btn-primary">
+                        <i class="bi bi-clipboard2-data me-2"></i>Sample Intake
+                    </a>
+                    
                     {% if user.role == 'technician' %}
-                        <a href="{% url 'operations:my_jobs' %}" class="btn btn-primary">
+                        <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-primary">
                             <i class="bi bi-person-workspace me-2"></i>My Jobs
                         </a>
                         <a href="{% url 'operations:results_entry' %}" class="btn btn-outline-success">
@@ -364,8 +369,11 @@
                             <i class="bi bi-paperclip me-2"></i>My Files
                         </a>
                     {% else %}
-                        <a href="{% url 'operations:samples_intake' %}" class="btn btn-primary">
-                            <i class="bi bi-clipboard2-data me-2"></i>Log Sample
+                        <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-plus-circle me-2"></i>New Sample
+                        </a>
+                        <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-outline-success">
+                            <i class="bi bi-lightning me-2"></i>Quick Intake
                         </a>
                         {% if user.role != 'office_staff' %}
                         <a href="{% url 'operations:job_board' %}" class="btn btn-outline-primary">
@@ -396,10 +404,12 @@
                             <span class="badge bg-info">Results Review</span>
                             <span class="badge bg-warning">Tracking</span>
                         {% elif user.role == 'technician' %}
-                            <span class="badge bg-primary">Personal Workflow</span>
-                            <span class="badge bg-success">Results Entry</span>
+                            <span class="badge bg-primary">Sample Intake</span>
+                            <span class="badge bg-success">Test Completion</span>
+                            <span class="badge bg-info">Results Entry</span>
                         {% else %}
                             <span class="badge bg-info">Sample Intake</span>
+                            <span class="badge bg-success">Client Management</span>
                         {% endif %}
                     </div>
                 </div>

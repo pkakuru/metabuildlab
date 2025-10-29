@@ -1,0 +1,94 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            My Jobs
+        </a>
+        <a href="{% url 'operations:samples_intake' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Receive Sample
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">My Activity Log</h5>
+                <small class="text-muted">Track of all your activities in the system</small>
+            </div>
+            <div class="card-body">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-clock-history display-1"></i>
+                    <h5 class="mt-3">No Activities Yet</h5>
+                    <p>Your activities will be logged here as you work with samples and tests.</p>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Start by Receiving a Sample
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Activity Types</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-success">Sample Activities</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-success"></i> Sample received</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Tests assigned</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Status updated</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Test Activities</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-primary"></i> Test started</li>
+                        <li><i class="bi bi-check-circle text-primary"></i> Results entered</li>
+                        <li><i class="bi bi-check-circle text-primary"></i> Test completed</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-info">File Activities</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check-circle text-info"></i> Files uploaded</li>
+                        <li><i class="bi bi-check-circle text-info"></i> Documents attached</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Receive Sample
+                    </a>
+                    <a href="{% url 'operations:results_entry' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-clipboard-check"></i> Enter Results
+                    </a>
+                    <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-clipboard"></i> My Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

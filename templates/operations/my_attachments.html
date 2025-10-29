@@ -1,0 +1,119 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            My Jobs
+        </a>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="bi bi-upload"></i>
+            Upload File
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">My Attachments</h5>
+                <small class="text-muted">Files uploaded for your assigned tests</small>
+            </div>
+            <div class="card-body">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-paperclip display-1"></i>
+                    <h5 class="mt-3">No Attachments Yet</h5>
+                    <p>Upload files related to your test results and sample documentation.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="bi bi-upload"></i> Upload First File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Upload Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> Supported Files
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Images (JPG, PNG, PDF)</li>
+                        <li>Documents (PDF, DOC, DOCX)</li>
+                        <li>Spreadsheets (XLS, XLSX)</li>
+                        <li>Maximum size: 10MB</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> File Naming
+                    </h6>
+                    <p class="mb-0 small">
+                        Use descriptive names that include sample ID and test type.
+                        Example: MBL2025100001_Concrete_Results.pdf
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="bi bi-upload"></i> Upload File
+                    </button>
+                    <a href="{% url 'operations:results_entry' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-clipboard-check"></i> Enter Results
+                    </a>
+                    <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-clipboard"></i> My Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select File</label>
+                        <input type="file" class="form-control" id="file" name="file" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe the file content"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload File</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

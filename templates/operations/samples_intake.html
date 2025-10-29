@@ -1,0 +1,304 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            New Sample Intake
+        </a>
+        <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success">
+            <i class="bi bi-lightning"></i>
+            Quick Intake
+        </a>
+        <a href="{% url 'operations:client_management' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-people"></i>
+            Manage Clients
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search & Filter Samples</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search Samples</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ search_query }}" placeholder="Search by sample ID, client, or description...">
+            </div>
+            <div class="col-md-2">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priority">
+                    <option value="">All Priorities</option>
+                    {% for priority_code, priority_name in priority_choices %}
+                        <option value="{{ priority_code }}" {% if priority_filter == priority_code %}selected{% endif %}>
+                            {{ priority_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="client" class="form-label">Client</label>
+                <select class="form-select" id="client" name="client">
+                    <option value="">All Clients</option>
+                    {% for client in clients %}
+                        <option value="{{ client.id }}" {% if client_filter == client.id|stringformat:"s" %}selected{% endif %}>
+                            {{ client.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="card-title mb-0">Samples Received</h5>
+                        <small class="text-muted">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ total_samples }} samples</small>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-primary">{{ total_samples }} Total</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Sample ID</th>
+                                <th>Client</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Received</th>
+                                <th>Tests</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sample in samples %}
+                                <tr>
+                                    <td>
+                                        <span class="fw-bold text-primary">{{ sample.sample_id }}</span>
+                                        {% if sample.client_reference %}
+                                            <br><small class="text-muted">{{ sample.client_reference }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ sample.client.name }}</div>
+                                        {% if sample.client.contact_person %}
+                                            <small class="text-muted">{{ sample.client.contact_person }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ sample.sample_type }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ sample.quantity }}</small>
+                                    </td>
+                                    <td>
+                                        {% if sample.status == 'received' %}
+                                            <span class="badge bg-info">{{ sample.get_status_display }}</span>
+                                        {% elif sample.status == 'in_progress' %}
+                                            <span class="badge bg-warning">{{ sample.get_status_display }}</span>
+                                        {% elif sample.status == 'testing' %}
+                                            <span class="badge bg-primary">{{ sample.get_status_display }}</span>
+                                        {% elif sample.status == 'completed' %}
+                                            <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                        {% elif sample.status == 'reported' %}
+                                            <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                        {% elif sample.status == 'cancelled' %}
+                                            <span class="badge bg-danger">{{ sample.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sample.priority == 'normal' %}
+                                            <span class="badge bg-light text-dark">{{ sample.get_priority_display }}</span>
+                                        {% elif sample.priority == 'urgent' %}
+                                            <span class="badge bg-warning">{{ sample.get_priority_display }}</span>
+                                        {% elif sample.priority == 'rush' %}
+                                            <span class="badge bg-danger">{{ sample.get_priority_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>{{ sample.received_date|date:"M d, Y" }}</div>
+                                        <small class="text-muted">{{ sample.received_by.get_full_name }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ sample.total_tests }}</span>
+                                        {% if sample.estimated_completion_date %}
+                                            <br><small class="text-muted">Due: {{ sample.estimated_completion_date|date:"M d" }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'operations:add_tests_to_sample' sample.sample_id %}" class="btn btn-sm btn-outline-success" title="Add Tests">
+                                                <i class="bi bi-plus"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="bi bi-inbox display-4"></i>
+                                            <p class="mt-2">No samples found matching your criteria.</p>
+                                            <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary btn-sm">
+                                                Receive First Sample
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Samples pagination">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sample Intake Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0">{{ total_samples }}</h4>
+                            <small class="text-muted">Total Samples</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">{{ clients.count }}</h4>
+                        <small class="text-muted">Active Clients</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Status Breakdown</h6>
+                    {% for status_code, status_name in status_choices %}
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small>{{ status_name }}</small>
+                            <span class="badge bg-light text-dark">
+                                {% for sample in samples %}
+                                    {% if sample.status == status_code %}{{ forloop.counter }}{% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Priority Breakdown</h6>
+                    {% for priority_code, priority_name in priority_choices %}
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small>{{ priority_name }}</small>
+                            <span class="badge bg-light text-dark">
+                                {% for sample in samples %}
+                                    {% if sample.priority == priority_code %}{{ forloop.counter }}{% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:new_sample_intake' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Full Sample Intake
+                    </a>
+                    <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-lightning"></i> Quick Intake
+                    </a>
+                    <a href="{% url 'operations:client_management' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-people"></i> Manage Clients
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

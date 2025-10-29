@@ -1,7 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.utils import timezone
+from .models import Client, Sample, SampleTest, SampleStatusHistory
+from .forms import ClientForm, SampleIntakeForm, QuickSampleIntakeForm, SampleTestForm, SampleStatusUpdateForm
+from pricing.models import TestItem
 
 
 def check_operations_access(user):
@@ -59,11 +65,61 @@ def samples_intake(request):
     """Samples Intake - Available to all roles"""  
     if not check_operations_access(request.user):
         raise PermissionDenied("Operations access required")
-        
-    context = {
+    
+    # Get filter parameters
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    priority_filter = request.GET.get('priority', '')
+    client_filter = request.GET.get('client', '')
+    
+    # Build queryset
+    samples = Sample.objects.select_related('client', 'received_by').prefetch_related('requested_tests').all()
+    
+    # Apply filters
+    if search_query:
+        samples = samples.filter(
+            Q(sample_id__icontains=search_query) |
+            Q(client__name__icontains=search_query) |
+            Q(client_reference__icontains=search_query) |
+            Q(sample_description__icontains=search_query)
+        )
+    
+    if status_filter:
+        samples = samples.filter(status=status_filter)
+    
+    if priority_filter:
+        samples = samples.filter(priority=priority_filter)
+    
+    if client_filter:
+        samples = samples.filter(client_id=client_filter)
+    
+    # Order by received date (newest first)
+    samples = samples.order_by('-received_date')
+    
+    # Pagination
+    paginator = Paginator(samples, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get filter options
+    clients = Client.objects.filter(is_active=True).order_by('name')
+    status_choices = Sample.STATUS_CHOICES
+    priority_choices = Sample.PRIORITY_CHOICES
+    
+    context = get_base_context(request.user)
+    context.update({
         'page_title': 'Samples Intake',
-        'samples': [],  # TODO: Add actual samples data
-    }
+        'page_obj': page_obj,
+        'samples': page_obj,
+        'clients': clients,
+        'status_choices': status_choices,
+        'priority_choices': priority_choices,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'priority_filter': priority_filter,
+        'client_filter': client_filter,
+        'total_samples': paginator.count,
+    })
     return render(request, 'operations/samples_intake.html', context)
 
 
@@ -181,3 +237,272 @@ def activity_log(request):
         'activities': [],  # TODO: Add technician's activity log
     }
     return render(request, 'operations/activity_log.html', context)
+
+
+# Sample Intake Views
+@login_required
+def sample_intake_dashboard(request):
+    """Dedicated Sample Intake Dashboard - Available to all roles"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    # Get recent samples received by this user
+    recent_samples = Sample.objects.filter(received_by=request.user).order_by('-received_date')[:5]
+    
+    # Get sample statistics
+    total_samples_received = Sample.objects.filter(received_by=request.user).count()
+    samples_today = Sample.objects.filter(
+        received_by=request.user,
+        received_date__date=timezone.now().date()
+    ).count()
+    
+    # Get pending samples (received but not completed)
+    pending_samples = Sample.objects.filter(
+        received_by=request.user,
+        status__in=['received', 'in_progress', 'testing']
+    ).count()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': 'Sample Intake Dashboard',
+        'recent_samples': recent_samples,
+        'total_samples_received': total_samples_received,
+        'samples_today': samples_today,
+        'pending_samples': pending_samples,
+    })
+    return render(request, 'operations/sample_intake_dashboard.html', context)
+
+
+@login_required
+def new_sample_intake(request):
+    """New Sample Intake - Available to all roles"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    if request.method == 'POST':
+        form = SampleIntakeForm(request.POST)
+        client_form = ClientForm(request.POST) if request.POST.get('client_choice') == 'new' else None
+        
+        if form.is_valid():
+            # Handle client creation or selection
+            if request.POST.get('client_choice') == 'new' and client_form and client_form.is_valid():
+                client = client_form.save()
+            elif request.POST.get('client_choice') == 'existing':
+                client = form.cleaned_data['existing_client']
+            else:
+                messages.error(request, "Please provide valid client information.")
+                return render(request, 'operations/new_sample_intake.html', {
+                    'form': form,
+                    'client_form': client_form or ClientForm(),
+                    'page_title': 'New Sample Intake',
+                    **get_base_context(request.user)
+                })
+            
+            # Create sample
+            sample = form.save(commit=False)
+            sample.client = client
+            sample.received_by = request.user
+            sample.save()
+            
+            # Add requested tests
+            requested_tests = form.cleaned_data['requested_tests']
+            for test_item in requested_tests:
+                SampleTest.objects.create(
+                    sample=sample,
+                    test_item=test_item,
+                    quantity_requested=1
+                )
+            
+            # Create status history entry
+            SampleStatusHistory.objects.create(
+                sample=sample,
+                new_status=sample.status,
+                changed_by=request.user,
+                notes="Sample received and entered into system"
+            )
+            
+            messages.success(request, f"Sample {sample.sample_id} has been successfully received and entered into the system.")
+            return redirect('operations:sample_detail', sample_id=sample.sample_id)
+    else:
+        form = SampleIntakeForm()
+        client_form = ClientForm()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': 'New Sample Intake',
+        'form': form,
+        'client_form': client_form,
+    })
+    return render(request, 'operations/new_sample_intake.html', context)
+
+
+@login_required
+def quick_sample_intake(request):
+    """Quick Sample Intake - Simplified form for walk-in clients"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    if request.method == 'POST':
+        form = QuickSampleIntakeForm(request.POST)
+        
+        if form.is_valid():
+            # Create or get client
+            client_name = form.cleaned_data['client_name']
+            contact_phone = form.cleaned_data.get('contact_phone', '')
+            
+            client, created = Client.objects.get_or_create(
+                name=client_name,
+                defaults={
+                    'phone': contact_phone,
+                    'contact_person': client_name
+                }
+            )
+            
+            # Create sample
+            sample = form.save(commit=False)
+            sample.client = client
+            sample.received_by = request.user
+            sample.status = 'received'
+            sample.save()
+            
+            # Create status history entry
+            SampleStatusHistory.objects.create(
+                sample=sample,
+                new_status=sample.status,
+                changed_by=request.user,
+                notes="Quick sample intake - tests to be added later"
+            )
+            
+            messages.success(request, f"Sample {sample.sample_id} has been quickly received. You can add tests later.")
+            return redirect('operations:sample_detail', sample_id=sample.sample_id)
+    else:
+        form = QuickSampleIntakeForm()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': 'Quick Sample Intake',
+        'form': form,
+    })
+    return render(request, 'operations/quick_sample_intake.html', context)
+
+
+@login_required
+def sample_detail(request, sample_id):
+    """Sample Detail View - Available to all roles"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    sample = get_object_or_404(Sample, sample_id=sample_id)
+    sample_tests = SampleTest.objects.filter(sample=sample).select_related('test_item')
+    status_history = SampleStatusHistory.objects.filter(sample=sample).order_by('-changed_at')
+    
+    # Status update form
+    if request.method == 'POST' and 'update_status' in request.POST:
+        status_form = SampleStatusUpdateForm(request.POST, instance=sample)
+        if status_form.is_valid():
+            old_status = sample.status
+            sample = status_form.save()
+            
+            # Create status history entry
+            SampleStatusHistory.objects.create(
+                sample=sample,
+                old_status=old_status,
+                new_status=sample.status,
+                changed_by=request.user,
+                notes=request.POST.get('status_notes', '')
+            )
+            
+            messages.success(request, f"Sample status updated to {sample.get_status_display()}")
+            return redirect('operations:sample_detail', sample_id=sample.sample_id)
+    else:
+        status_form = SampleStatusUpdateForm(instance=sample)
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': f'Sample {sample.sample_id}',
+        'sample': sample,
+        'sample_tests': sample_tests,
+        'status_history': status_history,
+        'status_form': status_form,
+    })
+    return render(request, 'operations/sample_detail.html', context)
+
+
+@login_required
+def add_tests_to_sample(request, sample_id):
+    """Add tests to existing sample - Available to all roles"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    sample = get_object_or_404(Sample, sample_id=sample_id)
+    
+    if request.method == 'POST':
+        form = SampleTestForm(request.POST)
+        if form.is_valid():
+            test_item = form.cleaned_data['test_item']
+            quantity_requested = form.cleaned_data['quantity_requested']
+            special_requirements = form.cleaned_data['special_requirements']
+            
+            # Check if test already exists for this sample
+            if SampleTest.objects.filter(sample=sample, test_item=test_item).exists():
+                messages.warning(request, f"Test {test_item.test_name} is already assigned to this sample.")
+            else:
+                SampleTest.objects.create(
+                    sample=sample,
+                    test_item=test_item,
+                    quantity_requested=quantity_requested,
+                    special_requirements=special_requirements
+                )
+                messages.success(request, f"Test {test_item.test_name} has been added to the sample.")
+            
+            return redirect('operations:sample_detail', sample_id=sample.sample_id)
+    else:
+        form = SampleTestForm()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': f'Add Tests to Sample {sample.sample_id}',
+        'sample': sample,
+        'form': form,
+    })
+    return render(request, 'operations/add_tests_to_sample.html', context)
+
+
+@login_required
+def client_management(request):
+    """Client Management - Available to all roles"""
+    if not check_operations_access(request.user):
+        raise PermissionDenied("Operations access required")
+    
+    # Get filter parameters
+    search_query = request.GET.get('search', '')
+    
+    # Build queryset
+    clients = Client.objects.all()
+    
+    # Apply filters
+    if search_query:
+        clients = clients.filter(
+            Q(name__icontains=search_query) |
+            Q(contact_person__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone__icontains=search_query)
+        )
+    
+    # Order by name
+    clients = clients.order_by('name')
+    
+    # Pagination
+    paginator = Paginator(clients, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': 'Client Management',
+        'page_obj': page_obj,
+        'clients': page_obj,
+        'search_query': search_query,
+        'total_clients': paginator.count,
+    })
+    return render(request, 'operations/client_management.html', context)

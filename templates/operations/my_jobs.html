@@ -1,210 +1,94 @@
 {% extends 'operations/base_operations.html' %}
 
-{% block title %}My Jobs - Meta Build Lab{% endblock %}
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
 
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:results_entry' %}" class="btn btn-primary">
+            <i class="bi bi-clipboard-check"></i>
+            Enter Results
+        </a>
+        <a href="{% url 'operations:my_attachments' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-paperclip"></i>
+            My Attachments
+        </a>
+    </div>
+</div>
+
 <div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h2 mb-1">My Jobs</h1>
-                <p class="text-muted mb-0">
-                    <i class="bi bi-person-workspace me-2"></i>Your assigned laboratory tests and current workload
-                </p>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">My Assigned Jobs</h5>
+                <small class="text-muted">Tests assigned to you for completion</small>
             </div>
-            <div class="text-end">
-                <span class="badge bg-primary">Technician Dashboard</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Technician Job Status -->
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card border-start border-primary border-4">
-            <div class="card-body text-center">
-                <i class="bi bi-list-task text-primary fs-2"></i>
-                <h4 class="mt-2 mb-1">7</h4>
-                <p class="text-muted mb-0">Total Assigned</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card border-start border-danger border-4">
-            <div class="card-body text-center">
-                <i class="bi bi-exclamation-triangle text-danger fs-2"></i>
-                <h4 class="mt-2 mb-1">3</h4>
-                <p class="text-muted mb-0">Due Today</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card border-start border-warning border-4">
-            <div class="card-body text-center">
-                <i class="bi bi-clock text-warning fs-2"></i>
-                <h4 class="mt-2 mb-1">4</h4>
-                <p class="text-muted mb-0">In Progress</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card border-start border-success border-4">
-            <div class="card-body text-center">
-                <i class="bi bi-check-circle text-success fs-2"></i>
-                <h4 class="mt-2 mb-1">12</h4>
-                <p class="text-muted mb-0">Completed This Week</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- My Jobs List -->
-<div class="card">
-    <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">My Assigned Jobs</h5>
-            <select class="form-select w-auto">
-                <option>All Jobs</option>
-                <option>Due Today</option>
-                <option>In Progress</option>
-                <option>Completed</option>
-            </select>
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Job ID</th>
-                        <th>Test Type</th>
-                        <th>Client</th>
-                        <th>Samples</th>
-                        <th>Priority</th>
-                        <th>Due Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="table-warning">
-                        <td><span class="badge bg-secondary">JB-2024-089</span></td>
-                        <td>
-                            <div>
-                                <span class="fw-medium">Concrete Compressive Strength</span><br>
-                                <small class="text-muted">28-day test</small>
-                            </div>
-                        </td>
-                        <td>Kampala Construction Ltd</td>
-                        <td><span class="badge bg-info">6 cylinders</span></td>
-                        <td><span class="badge bg-danger">High</span></td>
-                        <td class="text-danger">
-                            <div>Oct 28, 2024</div>
-                            <small>Due today!</small>
-                        </td>
-                        <td><span class="badge bg-warning">Testing</span></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-primary">
-                                    <i class="bi bi-play-fill"></i> Continue
-                                </button>
-                                <button class="btn btn-outline-success">
-                                    <i class="bi bi-pencil-square"></i> Enter Results
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <td><span class="badge bg-secondary">JB-2024-087</span></td>
-                        <td>
-                            <div>
-                                <span class="fw-medium">Soil Classification</span><br>
-                                <small class="text-muted">AASHTO & USCS</small>
-                            </div>
-                        </td>
-                        <td>NWSC Engineering</td>
-                        <td><span class="badge bg-info">4 samples</span></td>
-                        <td><span class="badge bg-success">Normal</span></td>
-                        <td>
-                            <div>Oct 30, 2024</div>
-                            <small class="text-muted">2 days left</small>
-                        </td>
-                        <td><span class="badge bg-info">Ready to Start</span></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-success">
-                                    <i class="bi bi-play-fill"></i> Start
-                                </button>
-                                <button class="btn btn-outline-info">
-                                    <i class="bi bi-eye"></i> View
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <tr class="table-success">
-                        <td><span class="badge bg-secondary">JB-2024-086</span></td>
-                        <td>
-                            <div>
-                                <span class="fw-medium">Asphalt Marshall Test</span><br>
-                                <small class="text-muted">Stability & Flow</small>
-                            </div>
-                        </td>
-                        <td>Uganda Roads Authority</td>
-                        <td><span class="badge bg-info">8 specimens</span></td>
-                        <td><span class="badge bg-success">Normal</span></td>
-                        <td>
-                            <div>Oct 29, 2024</div>
-                            <small class="text-success">Completed early</small>
-                        </td>
-                        <td><span class="badge bg-success">Completed</span></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary">
-                                    <i class="bi bi-eye"></i> View Results
-                                </button>
-                                <button class="btn btn-outline-success">
-                                    <i class="bi bi-download"></i> Report
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Tips for Technicians -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card bg-light">
             <div class="card-body">
-                <h6 class="card-title">
-                    <i class="bi bi-lightbulb text-warning me-2"></i>Quick Tips for Efficient Lab Work
-                </h6>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="d-flex">
-                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
-                            <small>Always check sample preparation requirements before starting</small>
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-clipboard-check display-1"></i>
+                    <h5 class="mt-3">No Jobs Assigned Yet</h5>
+                    <p>When tests are assigned to you for completion, they will appear here.</p>
+                    <a href="{% url 'operations:results_entry' %}" class="btn btn-primary">
+                        <i class="bi bi-clipboard-check"></i> Enter Results
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Technician Dashboard</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0">0</h4>
+                            <small class="text-muted">Assigned Jobs</small>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="d-flex">
-                            <i class="bi bi-clock text-info me-2 mt-1"></i>
-                            <small>Update job status regularly for better tracking</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="d-flex">
-                            <i class="bi bi-camera text-primary me-2 mt-1"></i>
-                            <small>Take photos of samples before and after testing</small>
-                        </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">0</h4>
+                        <small class="text-muted">Completed</small>
                     </div>
                 </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'operations:results_entry' %}" class="btn btn-success btn-sm">
+                            <i class="bi bi-clipboard-check"></i> Enter Results
+                        </a>
+                        <a href="{% url 'operations:my_attachments' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-paperclip"></i> My Attachments
+                        </a>
+                        <a href="{% url 'operations:activity_log' %}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-clock-history"></i> Activity Log
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Technician Role</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    As a technician, you can:
+                </p>
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-check-circle text-success"></i> Complete assigned tests</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Enter test results</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Upload attachments</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Track job progress</li>
+                </ul>
             </div>
         </div>
     </div>
