@@ -18,11 +18,12 @@ pipeline {
         stage('Setup Virtual Environment') {
             steps {
                 sh '''
+                #!/bin/bash
                 echo "Creating or reusing virtual environment..."
                 if [ ! -d "$VENV_DIR" ]; then
                     $PYTHON -m venv $VENV_DIR
                 fi
-                source $VENV_DIR/bin/activate
+                . $VENV_DIR/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
@@ -32,8 +33,9 @@ pipeline {
         stage('Run Migrations') {
             steps {
                 sh '''
+                #!/bin/bash
                 echo "Running Django migrations..."
-                source $VENV_DIR/bin/activate
+                . $VENV_DIR/bin/activate
                 python manage.py makemigrations --noinput
                 python manage.py migrate --noinput
                 '''
@@ -43,8 +45,9 @@ pipeline {
         stage('Collect Static Files') {
             steps {
                 sh '''
+                #!/bin/bash
                 echo "Collecting static files..."
-                source $VENV_DIR/bin/activate
+                . $VENV_DIR/bin/activate
                 python manage.py collectstatic --noinput
                 '''
             }
@@ -53,6 +56,7 @@ pipeline {
         stage('Restart Django Server') {
             steps {
                 sh '''
+                #!/bin/bash
                 echo "Restarting Django development server..."
                 pkill -f "manage.py runserver" || true
                 nohup $VENV_DIR/bin/python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
