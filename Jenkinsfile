@@ -56,15 +56,15 @@ pipeline {
         stage('Restart Django Server') {
             steps {
                 sh '''
-                #!/bin/bash
                 echo "Restarting Django development server..."
-                pkill -f "manage.py runserver" || true
-                nohup $VENV_DIR/bin/python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
+                pkill -f manage.py || true
                 sleep 5
+                nohup $VENV_DIR/bin/python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
                 echo "Server started on port 8000"
                 '''
             }
         }
+
     }
 
     post {
