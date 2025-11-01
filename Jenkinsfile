@@ -20,7 +20,7 @@ pipeline {
                 echo "Removing any preinstalled pip..."
                 rm -rf venv/lib/python3.12/site-packages/pip*
 
-                echo "Installing pip 23.3.2 manually..."
+                echo "Installing stable pip 23.3.2..."
                 venv/bin/python -m ensurepip --upgrade
                 venv/bin/python -m pip install --force-reinstall pip==23.3.2
 
@@ -29,9 +29,6 @@ pipeline {
                 '''
             }
         }
-
-
-
 
         stage('Run Migrations') {
             steps {
@@ -58,16 +55,30 @@ pipeline {
                 echo "Restarting Django development server..."
                 pkill -f "manage.py runserver" || true
                 sleep 3
+
+                echo "Starting Django server in background..."
                 nohup $WORKSPACE/venv/bin/python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
-                echo "✅ Django server started successfully on port 8000"
+
+                sleep 5
+                echo "✅ Django server started successfully on http://192.168.1.181:8000"
                 '''
             }
         }
+
+        stage('Verify Server') {
+            steps {
+                sh '''
+                echo "Checking if Django server is running..."
+                ps aux | grep runserver | grep -v grep || (echo "❌ Server not running!" && exit 1)
+                '''
+            }
+        }
+
     }
 
     post {
         success {
-            echo "MetaBuildLab successfully deployed at http://192.168.1.181:8000"
+            echo "✅ MetaBuildLab successfully deployed at http://192.168.1.181:8000"
         }
         failure {
             echo "❌ Build failed — check console output for errors."
