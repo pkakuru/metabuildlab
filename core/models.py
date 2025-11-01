@@ -88,7 +88,7 @@ class User(AbstractUser):
         """
         access_matrix = {
             'director': ['sales', 'operations', 'pricing', 'finance', 'config'],
-            'lab_manager': ['operations', 'pricing', 'finance'],
+            'lab_manager': ['sales', 'operations', 'pricing', 'finance'],  # Added sales for client management
             'office_staff': ['sales', 'operations', 'finance'],  # Added operations for sample intake
             'technician': ['operations'],
         }
@@ -104,7 +104,7 @@ class User(AbstractUser):
         """
         access_matrix = {
             'director': ['sales', 'operations', 'pricing', 'finance', 'config'],
-            'lab_manager': ['operations', 'pricing', 'finance'],
+            'lab_manager': ['sales', 'operations', 'pricing', 'finance'],  # Added sales for client management
             'office_staff': ['sales', 'operations', 'finance'],  # Added operations for sample intake
             'technician': ['operations'],
         }

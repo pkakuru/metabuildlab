@@ -117,6 +117,8 @@ class Sample(models.Model):
         if not self.sample_id:
             # Generate sample ID if not provided
             self.sample_id = self.generate_sample_id()
+        if not self.client_reference:
+            self.client_reference = self.generate_client_reference()
         super().save(*args, **kwargs)
 
     def generate_sample_id(self):
@@ -140,6 +142,27 @@ class Sample(models.Model):
             next_number = 1
         
         return f"MBL{year:04d}{month:02d}{next_number:04d}"
+
+    def generate_client_reference(self):
+        """Generate a client reference identifier"""
+        from django.utils import timezone
+        year = timezone.now().year
+        month = timezone.now().month
+
+        last_reference = Sample.objects.filter(
+            client_reference__startswith=f"CR{year:04d}{month:02d}"
+        ).order_by('-client_reference').first()
+
+        if last_reference:
+            try:
+                last_number = int(last_reference.client_reference[-4:])
+                next_number = last_number + 1
+            except (ValueError, IndexError):
+                next_number = 1
+        else:
+            next_number = 1
+
+        return f"CR{year:04d}{month:02d}{next_number:04d}"
 
 
 class SampleTest(models.Model):

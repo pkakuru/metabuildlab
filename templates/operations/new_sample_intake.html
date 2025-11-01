@@ -27,6 +27,27 @@
             <div class="card-body">
                 <form method="post" id="sampleIntakeForm">
                     {% csrf_token %}
+                    {{ form.sample_type }}
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading mb-2">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Please correct the highlighted issues before receiving the sample.
+                        </h6>
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% if field.field.widget.input_type != 'hidden' %}
+                                    {% for error in field.errors %}
+                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     
                     <!-- Client Selection Section -->
                     <div class="mb-4">
@@ -37,31 +58,28 @@
                         <div class="row mb-3">
                             <div class="col-12">
                                 <label class="form-label">Client Selection</label>
-                                <div class="row">
+                                <div class="row g-2">
+                                    {% for option in form.client_choice %}
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            {{ form.client_choice.0 }}
-                                            <label class="form-check-label" for="{{ form.client_choice.0.id_for_label }}">
-                                                Select Existing Client
+                                            {# Render Django's radio input as-is to preserve IDs/values #}
+                                            {{ option.tag }}
+                                            <label class="form-check-label" for="{{ option.id_for_label }}">
+                                                {{ option.choice_label }}
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            {{ form.client_choice.1 }}
-                                            <label class="form-check-label" for="{{ form.client_choice.1.id_for_label }}">
-                                                Create New Client
-                                            </label>
-                                        </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
+                                {{ form.client_choice.errors }}
                             </div>
                         </div>
                         
                         <!-- Existing Client Selection -->
                         <div id="existingClientSection" class="mb-3">
-                            <label for="{{ form.existing_client.id_for_label }}" class="form-label">Select Client</label>
+                            <label for="{{ form.existing_client.id_for_label }}" class="form-label">{{ form.existing_client.label }}</label>
                             {{ form.existing_client }}
+                            {{ form.existing_client.errors }}
                         </div>
                         
                         <!-- New Client Form -->
@@ -75,32 +93,38 @@
                                         <div class="col-md-6">
                                             <label for="{{ client_form.name.id_for_label }}" class="form-label">Company/Client Name *</label>
                                             {{ client_form.name }}
+                                            {{ client_form.name.errors }}
                                         </div>
                                         <div class="col-md-6">
                                             <label for="{{ client_form.contact_person.id_for_label }}" class="form-label">Contact Person</label>
                                             {{ client_form.contact_person }}
+                                            {{ client_form.contact_person.errors }}
                                         </div>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-md-6">
                                             <label for="{{ client_form.email.id_for_label }}" class="form-label">Email</label>
                                             {{ client_form.email }}
+                                            {{ client_form.email.errors }}
                                         </div>
                                         <div class="col-md-6">
                                             <label for="{{ client_form.phone.id_for_label }}" class="form-label">Phone</label>
                                             {{ client_form.phone }}
+                                            {{ client_form.phone.errors }}
                                         </div>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-12">
                                             <label for="{{ client_form.address.id_for_label }}" class="form-label">Address</label>
                                             {{ client_form.address }}
+                                            {{ client_form.address.errors }}
                                         </div>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-12">
                                             <label for="{{ client_form.company_registration.id_for_label }}" class="form-label">Company Registration</label>
                                             {{ client_form.company_registration }}
+                                            {{ client_form.company_registration.errors }}
                                         </div>
                                     </div>
                                 </div>
@@ -116,19 +140,29 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="{{ form.client_reference.id_for_label }}" class="form-label">Client Reference</label>
-                                {{ form.client_reference }}
+                                <label class="form-label">Client Reference</label>
+                                <div class="form-control-plaintext text-muted">Automatically generated when the sample is received.</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="{{ form.sample_type.id_for_label }}" class="form-label">Sample Type *</label>
-                                {{ form.sample_type }}
+                                <label for="{{ form.sample_type_choice.id_for_label }}" class="form-label">Sample Type *</label>
+                                {{ form.sample_type_choice }}
+                                {{ form.sample_type_choice.errors }}
                             </div>
                         </div>
+                        <div class="row mt-3" id="sampleTypeOtherWrapper" style="display: none;">
+                            <div class="col-12">
+                                <label for="{{ form.sample_type_other.id_for_label }}" class="form-label">Specify Sample Type</label>
+                                {{ form.sample_type_other }}
+                                {{ form.sample_type_other.errors }}
+                            </div>
+                        </div>
+                        {{ form.sample_type.errors }}
                         
                         <div class="row mt-3">
                             <div class="col-12">
                                 <label for="{{ form.sample_description.id_for_label }}" class="form-label">Sample Description *</label>
                                 {{ form.sample_description }}
+                                {{ form.sample_description.errors }}
                             </div>
                         </div>
                         
@@ -136,14 +170,17 @@
                             <div class="col-md-4">
                                 <label for="{{ form.sample_condition.id_for_label }}" class="form-label">Sample Condition</label>
                                 {{ form.sample_condition }}
+                                {{ form.sample_condition.errors }}
                             </div>
                             <div class="col-md-4">
                                 <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity *</label>
                                 {{ form.quantity }}
+                                {{ form.quantity.errors }}
                             </div>
                             <div class="col-md-4">
                                 <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
                                 {{ form.priority }}
+                                {{ form.priority.errors }}
                             </div>
                         </div>
                         
@@ -151,10 +188,12 @@
                             <div class="col-md-6">
                                 <label for="{{ form.location_collected.id_for_label }}" class="form-label">Collection Location</label>
                                 {{ form.location_collected }}
+                                {{ form.location_collected.errors }}
                             </div>
                             <div class="col-md-6">
                                 <label for="{{ form.collection_date.id_for_label }}" class="form-label">Collection Date</label>
                                 {{ form.collection_date }}
+                                {{ form.collection_date.errors }}
                             </div>
                         </div>
                     </div>
@@ -168,22 +207,30 @@
                         <div class="mb-3">
                             <label for="{{ form.requested_tests.id_for_label }}" class="form-label">Requested Tests *</label>
                             <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-                                {% for test in form.requested_tests %}
-                                    <div class="form-check mb-2">
-                                        {{ test.tag }}
-                                        <label class="form-check-label" for="{{ test.id_for_label }}">
-                                            <strong>{{ test.choice_label }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ test.choice_label|slice:"50:" }}</small>
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                {% if form.requested_tests|length %}
+                                    {% for test in form.requested_tests %}
+                                        <div class="form-check mb-2">
+                                            {{ test.tag }}
+                                            <label class="form-check-label" for="{{ test.id_for_label }}">
+                                                <strong>{{ test.choice_label }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ test.choice_label|slice:"50:" }}</small>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted mb-0">
+                                        No active tests are available. Please add test items in the Pricing module before receiving samples.
+                                    </p>
+                                {% endif %}
                             </div>
+                            {{ form.requested_tests.errors }}
                         </div>
                         
                         <div class="mb-3">
                             <label for="{{ form.special_instructions.id_for_label }}" class="form-label">Special Instructions</label>
                             {{ form.special_instructions }}
+                            {{ form.special_instructions.errors }}
                         </div>
                     </div>
                     
@@ -197,10 +244,12 @@
                             <div class="col-md-6">
                                 <label for="{{ form.delivery_method.id_for_label }}" class="form-label">Delivery Method</label>
                                 {{ form.delivery_method }}
+                                {{ form.delivery_method.errors }}
                             </div>
                             <div class="col-md-6">
                                 <label for="{{ form.courier_details.id_for_label }}" class="form-label">Courier Details</label>
                                 {{ form.courier_details }}
+                                {{ form.courier_details.errors }}
                             </div>
                         </div>
                     </div>
@@ -214,6 +263,7 @@
                         <div class="mb-3">
                             <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
                             {{ form.notes }}
+                            {{ form.notes.errors }}
                         </div>
                     </div>
                     
@@ -281,7 +331,7 @@
                     <a href="{% url 'operations:quick_sample_intake' %}" class="btn btn-success btn-sm">
                         <i class="bi bi-lightning"></i> Quick Intake
                     </a>
-                    <a href="{% url 'operations:client_management' %}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{% url 'sales:clients' %}" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-people"></i> Manage Clients
                     </a>
                 </div>
@@ -295,23 +345,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const clientChoiceRadios = document.querySelectorAll('input[name="client_choice"]');
     const existingClientSection = document.getElementById('existingClientSection');
     const newClientSection = document.getElementById('newClientSection');
+    const sampleTypeSelect = document.querySelector('select[name="sample_type_choice"]');
+    const sampleTypeOtherWrapper = document.getElementById('sampleTypeOtherWrapper');
+    const newClientFields = newClientSection ? Array.from(newClientSection.querySelectorAll('input, select, textarea')) : [];
+    const existingClientField = document.querySelector('select[name="existing_client"]');
+
+    const requiredMap = new WeakMap();
+    newClientFields.forEach(field => {
+        if (field.hasAttribute('required')) {
+            requiredMap.set(field, true);
+        }
+    });
     
     function toggleClientSections() {
-        const selectedChoice = document.querySelector('input[name="client_choice"]:checked').value;
+        let checkedRadio = document.querySelector('input[name="client_choice"]:checked');
+        if (!checkedRadio && clientChoiceRadios.length) {
+            clientChoiceRadios[0].checked = true;
+            checkedRadio = clientChoiceRadios[0];
+        }
+        if (!checkedRadio) {
+            return;
+        }
+        const selectedChoice = checkedRadio.value;
         
         if (selectedChoice === 'existing') {
             existingClientSection.style.display = 'block';
             newClientSection.style.display = 'none';
+            if (existingClientField) {
+                existingClientField.removeAttribute('disabled');
+            }
+            newClientFields.forEach(field => {
+                if (requiredMap.get(field)) {
+                    field.removeAttribute('required');
+                }
+                field.setAttribute('disabled', 'disabled');
+            });
         } else {
             existingClientSection.style.display = 'none';
             newClientSection.style.display = 'block';
+            if (existingClientField) {
+                existingClientField.setAttribute('disabled', 'disabled');
+                existingClientField.value = '';
+            }
+            newClientFields.forEach(field => {
+                field.removeAttribute('disabled');
+                if (requiredMap.get(field)) {
+                    field.setAttribute('required', 'required');
+                }
+            });
         }
     }
     
+    function toggleSampleTypeOther() {
+        if (!sampleTypeSelect) {
+            return;
+        }
+        if (sampleTypeSelect.value === '__other__') {
+            sampleTypeOtherWrapper.style.display = 'block';
+        } else {
+            sampleTypeOtherWrapper.style.display = 'none';
+        }
+    }
+
     clientChoiceRadios.forEach(radio => {
         radio.addEventListener('change', toggleClientSections);
     });
     
+    if (sampleTypeSelect) {
+        sampleTypeSelect.addEventListener('change', toggleSampleTypeOther);
+        toggleSampleTypeOther();
+    }
+
     // Initial state
     toggleClientSections();
 });

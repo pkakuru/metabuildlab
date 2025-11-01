@@ -128,6 +128,14 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.12);
             transform: translateY(-2px);
         }
+
+        .errorlist {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin: 4px 0 0;
+            padding-left: 0;
+            list-style: none;
+        }
         
         .module-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -306,6 +314,26 @@
     
     <!-- Main Content -->
     <main class="main-content">
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert 
+                    {% if 'success' in message.tags %}alert-success
+                    {% elif 'warning' in message.tags %}alert-warning
+                    {% elif 'error' in message.tags %}alert-danger
+                    {% elif 'info' in message.tags %}alert-info
+                    {% else %}alert-secondary{% endif %}">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-info-circle me-2 mt-1"></i>
+                        <div>
+                            {{ message }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>

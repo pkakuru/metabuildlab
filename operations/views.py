@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import timezone
 from .models import Client, Sample, SampleTest, SampleStatusHistory
 from .forms import ClientForm, SampleIntakeForm, QuickSampleIntakeForm, SampleTestForm, SampleStatusUpdateForm
@@ -468,17 +468,25 @@ def add_tests_to_sample(request, sample_id):
     return render(request, 'operations/add_tests_to_sample.html', context)
 
 
+def check_client_management_access(user):
+    """Check if user can manage clients (Office Staff, Lab Manager, Directors only - not Technicians)"""
+    return user.role in ['office_staff', 'lab_manager', 'director']
+
+
 @login_required
 def client_management(request):
-    """Client Management - Available to all roles"""
-    if not check_operations_access(request.user):
-        raise PermissionDenied("Operations access required")
+    """Client Management - Office Staff, Lab Manager, and Directors only"""
+    if not check_client_management_access(request.user):
+        raise PermissionDenied("Client management access required. Office Staff, Lab Manager, and Directors only.")
     
     # Get filter parameters
     search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
     
     # Build queryset
-    clients = Client.objects.all()
+    clients = Client.objects.all().annotate(
+        sample_count=Count('samples')
+    )
     
     # Apply filters
     if search_query:
@@ -486,11 +494,22 @@ def client_management(request):
             Q(name__icontains=search_query) |
             Q(contact_person__icontains=search_query) |
             Q(email__icontains=search_query) |
-            Q(phone__icontains=search_query)
+            Q(phone__icontains=search_query) |
+            Q(company_registration__icontains=search_query)
         )
+    
+    if status_filter == 'active':
+        clients = clients.filter(is_active=True)
+    elif status_filter == 'inactive':
+        clients = clients.filter(is_active=False)
     
     # Order by name
     clients = clients.order_by('name')
+    
+    # Get statistics
+    total_clients = Client.objects.count()
+    active_clients = Client.objects.filter(is_active=True).count()
+    inactive_clients = Client.objects.filter(is_active=False).count()
     
     # Pagination
     paginator = Paginator(clients, 25)
@@ -503,6 +522,118 @@ def client_management(request):
         'page_obj': page_obj,
         'clients': page_obj,
         'search_query': search_query,
-        'total_clients': paginator.count,
+        'status_filter': status_filter,
+        'total_clients': total_clients,
+        'active_clients': active_clients,
+        'inactive_clients': inactive_clients,
+        'can_manage_clients': check_client_management_access(request.user),
     })
     return render(request, 'operations/client_management.html', context)
+
+
+@login_required
+def client_create(request):
+    """Create a new client - Office Staff, Lab Manager, Directors only"""
+    if not check_client_management_access(request.user):
+        raise PermissionDenied("Client management access required. Office Staff, Lab Manager, and Directors only.")
+    
+    if request.method == 'POST':
+        form = ClientForm(request.POST)
+        if form.is_valid():
+            client = form.save()
+            messages.success(request, f"Client '{client.name}' has been created successfully.")
+            return redirect('operations:client_detail', client_id=client.id)
+    else:
+        form = ClientForm()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': 'Create New Client',
+        'form': form,
+        'action': 'create',
+    })
+    return render(request, 'operations/client_form.html', context)
+
+
+@login_required
+def client_detail(request, client_id):
+    """View client details - Office Staff, Lab Manager, Directors only"""
+    if not check_client_management_access(request.user):
+        raise PermissionDenied("Client management access required. Office Staff, Lab Manager, and Directors only.")
+    
+    client = get_object_or_404(Client, id=client_id)
+    samples = client.samples.order_by('-received_date')[:10]  # Recent samples
+    
+    # Get sample statistics
+    total_samples = client.samples.count()
+    active_samples = client.samples.filter(status__in=['received', 'in_progress', 'testing']).count()
+    completed_samples = client.samples.filter(status__in=['completed', 'reported']).count()
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': f'Client: {client.name}',
+        'client': client,
+        'samples': samples,
+        'total_samples': total_samples,
+        'active_samples': active_samples,
+        'completed_samples': completed_samples,
+        'can_manage_clients': check_client_management_access(request.user),
+    })
+    return render(request, 'operations/client_detail.html', context)
+
+
+@login_required
+def client_update(request, client_id):
+    """Update client information - Office Staff, Lab Manager, Directors only"""
+    if not check_client_management_access(request.user):
+        raise PermissionDenied("Client management access required. Office Staff, Lab Manager, and Directors only.")
+    
+    client = get_object_or_404(Client, id=client_id)
+    
+    if request.method == 'POST':
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            client = form.save()
+            messages.success(request, f"Client '{client.name}' has been updated successfully.")
+            return redirect('operations:client_detail', client_id=client.id)
+    else:
+        form = ClientForm(instance=client)
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': f'Edit Client: {client.name}',
+        'form': form,
+        'client': client,
+        'action': 'update',
+    })
+    return render(request, 'operations/client_form.html', context)
+
+
+@login_required
+def client_delete(request, client_id):
+    """Delete (deactivate) a client - Lab Manager and Directors only"""
+    # Only Lab Managers and Directors can delete clients
+    if request.user.role not in ['lab_manager', 'director']:
+        raise PermissionDenied("Only Lab Managers and Directors can delete clients.")
+    
+    client = get_object_or_404(Client, id=client_id)
+    
+    if request.method == 'POST':
+        # Soft delete - set is_active to False
+        if client.samples.exists():
+            client.is_active = False
+            client.save()
+            messages.success(request, f"Client '{client.name}' has been deactivated. They cannot receive new samples.")
+        else:
+            client.delete()
+            messages.success(request, f"Client '{client.name}' has been permanently deleted.")
+        
+        return redirect('operations:client_management')
+    
+    context = get_base_context(request.user)
+    context.update({
+        'page_title': f'Delete Client: {client.name}',
+        'client': client,
+        'has_samples': client.samples.exists(),
+    })
+    return render(request, 'operations/client_delete.html', context)

@@ -1,4 +1,4 @@
-{% extends 'operations/base_operations.html' %}
+{% extends 'sales/base_sales.html' %}
 
 {% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
 
@@ -6,9 +6,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3">{{ page_title }}</h1>
     <div class="d-flex gap-2">
-        <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'sales:dashboard' %}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
-            Back to Samples
+            Back to Dashboard
         </a>
         {% if can_manage_clients %}
             <a href="{% url 'sales:client_create' %}" class="btn btn-primary">
@@ -114,7 +114,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">{{ client.samples.count }}</span>
+                                        <span class="badge bg-info">{{ client.sample_count }}</span>
                                     </td>
                                     <td>
                                         <div>{{ client.created_at|date:"M d, Y" }}</div>
@@ -170,10 +170,10 @@
                         <ul class="pagination pagination-sm justify-content-center mb-0">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+                                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">First</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
                                 </li>
                             {% endif %}
                             
@@ -185,10 +185,10 @@
                             
                             {% if page_obj.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Last</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -228,7 +228,7 @@
                                 <br>
                                 <small class="text-muted">{{ client.created_at|timesince }} ago</small>
                             </div>
-                            <span class="badge bg-light text-dark">{{ client.samples.count }}</span>
+                            <span class="badge bg-light text-dark">{{ client.sample_count }}</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -257,5 +257,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

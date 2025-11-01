@@ -37,6 +37,19 @@ class SampleIntakeForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
+    # Sample type selection with optional manual entry
+    sample_type_choice = forms.ChoiceField(
+        choices=[],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        required=True,
+        label='Sample Type'
+    )
+    sample_type_other = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Specify sample type'}),
+        label='Specify Sample Type'
+    )
+    
     # Test selection
     requested_tests = forms.ModelMultipleChoiceField(
         queryset=TestItem.objects.filter(is_active=True),
@@ -48,13 +61,12 @@ class SampleIntakeForm(forms.ModelForm):
     class Meta:
         model = Sample
         fields = [
-            'client_reference', 'sample_type', 'sample_description', 'sample_condition',
+            'sample_type', 'sample_description', 'sample_condition',
             'quantity', 'location_collected', 'collection_date', 'priority',
             'special_instructions', 'delivery_method', 'courier_details', 'notes'
         ]
         widgets = {
-            'client_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Client\'s reference number'}),
-            'sample_type': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Soil, Concrete, Steel'}),
+            'sample_type': forms.HiddenInput(),
             'sample_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Detailed description of the sample'}),
             'sample_condition': forms.Select(attrs={'class': 'form-select'}),
             'quantity': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., 5kg, 10 pieces, 1 liter'}),
@@ -69,16 +81,49 @@ class SampleIntakeForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Hide underlying sample_type field since we manage via choice/other inputs
+        self.fields['sample_type'].required = False
+
+        # Build sample type choices from existing samples
+        existing_types = Sample.objects.values_list('sample_type', flat=True).exclude(sample_type="").distinct().order_by('sample_type')
+        type_choices = [('', 'Select sample type...')]
+        type_choices += [(sample_type, sample_type) for sample_type in existing_types]
+        type_choices.append(('__other__', 'Other (specify below)'))
+        self.fields['sample_type_choice'].choices = type_choices
+
+        # If editing an instance, pre-populate selection
+        current_type = self.instance.sample_type if self.instance and self.instance.sample_type else None
+        if current_type and current_type in [choice[0] for choice in type_choices if choice[0] not in ['', '__other__']]:
+            self.fields['sample_type_choice'].initial = current_type
+        elif current_type:
+            self.fields['sample_type_choice'].initial = '__other__'
+            self.fields['sample_type_other'].initial = current_type
+
         # Group tests by category for better organization
         self.fields['requested_tests'].queryset = TestItem.objects.filter(is_active=True).select_related('category', 'subcategory')
+        self.fields['existing_client'].label = 'Company/Client Name'
     
     def clean(self):
         cleaned_data = super().clean()
         client_choice = cleaned_data.get('client_choice')
         existing_client = cleaned_data.get('existing_client')
+        sample_type_choice = cleaned_data.get('sample_type_choice')
+        sample_type_other = cleaned_data.get('sample_type_other')
         
         if client_choice == 'existing' and not existing_client:
             raise ValidationError("Please select an existing client.")
+
+        # Determine final sample type value
+        if not sample_type_choice:
+            self.add_error('sample_type_choice', "Please select a sample type.")
+        elif sample_type_choice == '__other__':
+            if not sample_type_other:
+                self.add_error('sample_type_other', "Please specify the sample type.")
+            else:
+                cleaned_data['sample_type'] = sample_type_other.strip()
+        else:
+            cleaned_data['sample_type'] = sample_type_choice
         
         return cleaned_data
 

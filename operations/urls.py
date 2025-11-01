@@ -19,8 +19,12 @@ urlpatterns = [
     path('samples/<str:sample_id>/', views.sample_detail, name='sample_detail'),
     path('samples/<str:sample_id>/add-tests/', views.add_tests_to_sample, name='add_tests_to_sample'),
     
-    # Client Management (All Roles)
+    # Client Management CRUD (Office Staff, Lab Manager, Directors)
     path('clients/', views.client_management, name='client_management'),
+    path('clients/new/', views.client_create, name='client_create'),
+    path('clients/<int:client_id>/', views.client_detail, name='client_detail'),
+    path('clients/<int:client_id>/edit/', views.client_update, name='client_update'),
+    path('clients/<int:client_id>/delete/', views.client_delete, name='client_delete'),
     
     # Director Only
     path('worklist/', views.technician_worklist, name='technician_worklist'),

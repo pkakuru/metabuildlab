@@ -1,0 +1,280 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sales:clients' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Clients
+        </a>
+        <a href="{% url 'sales:client_update' client.id %}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i>
+            Edit Client
+        </a>
+        <a href="{% url 'operations:new_sample_intake' %}?client={{ client.id }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
+            New Sample
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Client Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-building"></i> Client Information
+                    </h5>
+                    {% if client.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Company/Client Name</label>
+                        <div class="fw-bold fs-5">{{ client.name }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Contact Person</label>
+                        <div class="fw-semibold">
+                            {% if client.contact_person %}
+                                {{ client.contact_person }}
+                            {% else %}
+                                <span class="text-muted">Not specified</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">
+                            <i class="bi bi-envelope"></i> Email Address
+                        </label>
+                        <div>
+                            {% if client.email %}
+                                <a href="mailto:{{ client.email }}">{{ client.email }}</a>
+                            {% else %}
+                                <span class="text-muted">Not provided</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">
+                            <i class="bi bi-telephone"></i> Phone Number
+                        </label>
+                        <div>
+                            {% if client.phone %}
+                                <a href="tel:{{ client.phone }}">{{ client.phone }}</a>
+                            {% else %}
+                                <span class="text-muted">Not provided</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if client.address %}
+                <div class="mb-3">
+                    <label class="form-label text-muted">
+                        <i class="bi bi-geo-alt"></i> Address
+                    </label>
+                    <div>{{ client.address|linebreaks }}</div>
+                </div>
+                {% endif %}
+                
+                {% if client.company_registration %}
+                <div class="mb-3">
+                    <label class="form-label text-muted">Company Registration Number</label>
+                    <div class="fw-semibold">{{ client.company_registration }}</div>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Created</label>
+                        <div>
+                            {{ client.created_at|date:"F d, Y" }}<br>
+                            <small class="text-muted">{{ client.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Last Updated</label>
+                        <div>
+                            {{ client.updated_at|date:"F d, Y" }}<br>
+                            <small class="text-muted">{{ client.updated_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Samples -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-box-seam"></i> Recent Samples
+                    </h5>
+                    <a href="{% url 'operations:samples_intake' %}?client={{ client.id }}" class="btn btn-sm btn-outline-primary">
+                        View All Samples
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if samples %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sample ID</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Received</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in samples %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-primary">{{ sample.sample_id }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ sample.sample_type }}</span>
+                                        </td>
+                                        <td>
+                                            {% if sample.status == 'received' %}
+                                                <span class="badge bg-info">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'in_progress' %}
+                                                <span class="badge bg-warning">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'testing' %}
+                                                <span class="badge bg-primary">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'completed' %}
+                                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'reported' %}
+                                                <span class="badge bg-success">{{ sample.get_status_display }}</span>
+                                            {% elif sample.status == 'cancelled' %}
+                                                <span class="badge bg-danger">{{ sample.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ sample.received_date|date:"M d, Y" }}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if total_samples > 10 %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'operations:samples_intake' %}?client={{ client.id }}" class="btn btn-outline-primary">
+                                View All {{ total_samples }} Samples
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-box display-4"></i>
+                        <p class="mt-3">No samples have been received from this client yet.</p>
+                        <a href="{% url 'operations:new_sample_intake' %}?client={{ client.id }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Receive First Sample
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Client Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-12 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4 class="text-primary mb-0">{{ total_samples }}</h4>
+                            <small class="text-muted">Total Samples</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-warning bg-opacity-10 rounded">
+                            <h5 class="text-warning mb-0">{{ active_samples }}</h5>
+                            <small class="text-muted">Active</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                            <h5 class="text-success mb-0">{{ completed_samples }}</h5>
+                            <small class="text-muted">Completed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'sales:client_update' client.id %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-pencil"></i> Edit Client Information
+                    </a>
+                    <a href="{% url 'operations:new_sample_intake' %}?client={{ client.id }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Receive New Sample
+                    </a>
+                    <a href="{% url 'operations:samples_intake' %}?client={{ client.id }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-list"></i> View All Samples
+                    </a>
+                    {% if user.role == 'lab_manager' or user.role == 'director' %}
+                        <hr>
+                        <a href="{% url 'sales:client_delete' client.id %}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete Client
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Client Status -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Client Status</h5>
+            </div>
+            <div class="card-body">
+                {% if client.is_active %}
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-check-circle"></i> This client is active and can receive new samples.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mb-0">
+                        <i class="bi bi-x-circle"></i> This client is inactive and cannot receive new samples.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -29,6 +29,24 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading mb-2">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Please fix the issues below to complete the quick intake.
+                        </h6>
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     
                     <!-- Client Information -->
                     <div class="mb-4">
@@ -39,11 +57,13 @@
                         <div class="mb-3">
                             <label for="{{ form.client_name.id_for_label }}" class="form-label">Client Name *</label>
                             {{ form.client_name }}
+                            {{ form.client_name.errors }}
                         </div>
                         
                         <div class="mb-3">
                             <label for="{{ form.contact_phone.id_for_label }}" class="form-label">Phone Number</label>
                             {{ form.contact_phone }}
+                            {{ form.contact_phone.errors }}
                         </div>
                     </div>
                     
@@ -56,21 +76,25 @@
                         <div class="mb-3">
                             <label for="{{ form.sample_type.id_for_label }}" class="form-label">Sample Type *</label>
                             {{ form.sample_type }}
+                            {{ form.sample_type.errors }}
                         </div>
                         
                         <div class="mb-3">
                             <label for="{{ form.sample_description.id_for_label }}" class="form-label">Sample Description *</label>
                             {{ form.sample_description }}
+                            {{ form.sample_description.errors }}
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity *</label>
                                 {{ form.quantity }}
+                                {{ form.quantity.errors }}
                             </div>
                             <div class="col-md-6">
                                 <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
                                 {{ form.priority }}
+                                {{ form.priority.errors }}
                             </div>
                         </div>
                     </div>
