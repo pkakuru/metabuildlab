@@ -53,17 +53,18 @@ pipeline {
             }
         }
 
-        stage('Restart Django Server') {
+        sstage('Restart Django Server') {
             steps {
                 sh '''
                 echo "Restarting Django development server..."
-                pkill -f manage.py || true
-                sleep 5
-                nohup $VENV_DIR/bin/python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
-                echo "Server started on port 8000"
+                pkill -f "manage.py runserver" || true
+                sleep 3
+                nohup $WORKSPACE/venv/bin/python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+                echo "✅ Django server started successfully in background"
                 '''
             }
         }
+
 
     }
 
