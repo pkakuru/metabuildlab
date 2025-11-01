@@ -13,13 +13,19 @@ pipeline {
                 sh '''
                 echo "Creating or reusing virtual environment..."
                 python3 -m venv venv
-                echo "Upgrading pip to a stable version..."
-                venv/bin/python -m pip install --upgrade "pip<24"
+
+                echo "Bootstrapping a clean pip..."
+                venv/bin/python -m ensurepip --upgrade
+
+                echo "Installing stable pip version (23.3.2)..."
+                venv/bin/python -m pip install --force-reinstall pip==23.3.2
+
                 echo "Installing project dependencies..."
                 venv/bin/python -m pip install -r requirements.txt
                 '''
             }
         }
+
 
 
         stage('Run Migrations') {
