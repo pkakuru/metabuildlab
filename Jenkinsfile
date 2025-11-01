@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/pkakuru/metabuildlab.git'
@@ -22,8 +21,8 @@ pipeline {
                 if [ ! -d "$VENV_DIR" ]; then
                     $PYTHON -m venv $VENV_DIR
                 fi
-                $VENV_DIR/bin/pip install --upgrade pip
-                $VENV_DIR/bin/pip install -r requirements.txt
+                $VENV_DIR/bin/python -m pip install --upgrade pip
+                $VENV_DIR/bin/python -m pip install -r requirements.txt
                 '''
             }
         }
