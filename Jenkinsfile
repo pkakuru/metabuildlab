@@ -11,13 +11,17 @@ pipeline {
         stage('Setup Virtual Environment') {
             steps {
                 sh '''
-                echo "Creating or reusing virtual environment..."
+                echo "Cleaning previous virtual environment if exists..."
+                rm -rf venv
+
+                echo "Creating a new virtual environment..."
                 python3 -m venv venv
 
-                echo "Bootstrapping a clean pip..."
-                venv/bin/python -m ensurepip --upgrade
+                echo "Removing any preinstalled pip..."
+                rm -rf venv/lib/python3.12/site-packages/pip*
 
-                echo "Installing stable pip version (23.3.2)..."
+                echo "Installing pip 23.3.2 manually..."
+                venv/bin/python -m ensurepip --upgrade
                 venv/bin/python -m pip install --force-reinstall pip==23.3.2
 
                 echo "Installing project dependencies..."
@@ -25,6 +29,7 @@ pipeline {
                 '''
             }
         }
+
 
 
 
