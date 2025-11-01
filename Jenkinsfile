@@ -4,7 +4,6 @@ pipeline {
     environment {
         VENV_DIR = "venv"
         PYTHON = "/usr/bin/python3"
-        PIP = "/usr/bin/pip3"
     }
 
     stages {
@@ -23,9 +22,8 @@ pipeline {
                 if [ ! -d "$VENV_DIR" ]; then
                     $PYTHON -m venv $VENV_DIR
                 fi
-                . $VENV_DIR/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                $VENV_DIR/bin/pip install --upgrade pip
+                $VENV_DIR/bin/pip install -r requirements.txt
                 '''
             }
         }
@@ -35,9 +33,8 @@ pipeline {
                 sh '''
                 #!/bin/bash
                 echo "Running Django migrations..."
-                . $VENV_DIR/bin/activate
-                python manage.py makemigrations --noinput
-                python manage.py migrate --noinput
+                $VENV_DIR/bin/python manage.py makemigrations --noinput
+                $VENV_DIR/bin/python manage.py migrate --noinput
                 '''
             }
         }
@@ -47,8 +44,7 @@ pipeline {
                 sh '''
                 #!/bin/bash
                 echo "Collecting static files..."
-                . $VENV_DIR/bin/activate
-                python manage.py collectstatic --noinput
+                $VENV_DIR/bin/python manage.py collectstatic --noinput
                 '''
             }
         }
