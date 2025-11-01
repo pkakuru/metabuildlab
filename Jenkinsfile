@@ -14,18 +14,23 @@ pipeline {
         }
 
         stage('Setup Virtual Environment') {
-            steps {
-                sh '''
-                #!/bin/bash
-                echo "Creating or reusing virtual environment..."
-                if [ ! -d "$VENV_DIR" ]; then
-                    $PYTHON -m venv $VENV_DIR
-                fi
-                $VENV_DIR/bin/python -m pip install --upgrade pip
-                $VENV_DIR/bin/python -m pip install -r requirements.txt
-                '''
-            }
-        }
+    steps {
+        sh '''
+        #!/bin/bash
+        echo "Creating fresh virtual environment..."
+        rm -rf $VENV_DIR
+        $PYTHON -m venv $VENV_DIR
+
+        echo "Upgrading pip safely..."
+        $VENV_DIR/bin/python -m ensurepip --upgrade
+        $VENV_DIR/bin/python -m pip install --upgrade pip setuptools wheel
+
+        echo "Installing requirements..."
+        $VENV_DIR/bin/python -m pip install --no-cache-dir -r requirements.txt
+        '''
+    }
+}
+
 
         stage('Run Migrations') {
             steps {
