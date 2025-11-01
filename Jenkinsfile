@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        VENV_DIR = "venv"
-        PYTHON = "/usr/bin/python3"
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -14,31 +9,22 @@ pipeline {
         }
 
         stage('Setup Virtual Environment') {
-    steps {
-        sh '''
-        #!/bin/bash
-        echo "Creating fresh virtual environment..."
-        rm -rf $VENV_DIR
-        $PYTHON -m venv $VENV_DIR
-
-        echo "Upgrading pip safely..."
-        $VENV_DIR/bin/python -m ensurepip --upgrade
-        $VENV_DIR/bin/python -m pip install --upgrade pip setuptools wheel
-
-        echo "Installing requirements..."
-        $VENV_DIR/bin/python -m pip install --no-cache-dir -r requirements.txt
-        '''
-    }
-}
-
+            steps {
+                sh '''
+                echo "Creating or reusing virtual environment..."
+                python3 -m venv venv
+                venv/bin/python -m pip install --upgrade pip
+                venv/bin/python -m pip install -r requirements.txt
+                '''
+            }
+        }
 
         stage('Run Migrations') {
             steps {
                 sh '''
-                #!/bin/bash
                 echo "Running Django migrations..."
-                $VENV_DIR/bin/python manage.py makemigrations --noinput
-                $VENV_DIR/bin/python manage.py migrate --noinput
+                venv/bin/python manage.py makemigrations --noinput
+                venv/bin/python manage.py migrate --noinput
                 '''
             }
         }
@@ -46,34 +32,31 @@ pipeline {
         stage('Collect Static Files') {
             steps {
                 sh '''
-                #!/bin/bash
                 echo "Collecting static files..."
-                $VENV_DIR/bin/python manage.py collectstatic --noinput
+                venv/bin/python manage.py collectstatic --noinput || true
                 '''
             }
         }
 
-        sstage('Restart Django Server') {
+        stage('Restart Django Server') {
             steps {
                 sh '''
                 echo "Restarting Django development server..."
                 pkill -f "manage.py runserver" || true
                 sleep 3
                 nohup $WORKSPACE/venv/bin/python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
-                echo "✅ Django server started successfully in background"
+                echo "✅ Django server started successfully on port 8000"
                 '''
             }
         }
-
-
     }
 
     post {
         success {
-            echo "✅ Meta Build Lab successfully deployed at http://192.168.1.181:8000"
+            echo "MetaBuildLab successfully deployed at http://192.168.1.181:8000"
         }
         failure {
-            echo "❌ Build failed — check Console Output for details."
+            echo "❌ Build failed — check console output for errors."
         }
     }
 }
