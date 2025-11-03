@@ -14,6 +14,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
+            overflow-x: hidden;
         }
         
         /* Top Navigation Bar for Main Modules */
@@ -26,12 +27,38 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             z-index: 1001;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .top-navbar .container-fluid {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0;
         }
         
         .navbar-brand {
             color: white !important;
             font-weight: bold;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar-brand .logo-icon svg {
+            width: 100%;
+            height: 100%;
         }
         
         .main-modules .nav-link {
@@ -50,6 +77,28 @@
             backdrop-filter: blur(10px);
         }
         
+        /* Mobile hamburger button */
+        .navbar-toggler-custom {
+            display: none;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+        
+        .navbar-toggler-custom:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .navbar-toggler-custom:focus {
+            outline: 2px solid rgba(255,255,255,0.5);
+            outline-offset: 2px;
+        }
+        
         /* Left Sidebar for Contextual Navigation */
         .sidebar {
             position: fixed;
@@ -58,9 +107,28 @@
             height: calc(100vh - 70px);
             width: 260px;
             background-color: #2c3e50;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             z-index: 1000;
             overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #1a252f;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #34495e;
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #455a6a;
         }
         
         .sidebar-collapsed {
@@ -93,22 +161,64 @@
             text-align: center;
             margin-right: 12px;
             font-size: 1.1rem;
+            flex-shrink: 0;
         }
         
         .sidebar-collapsed .nav-link span {
             display: none;
         }
         
+        /* Main content area with independent scrolling */
         .main-content {
             margin-left: 260px;
             margin-top: 70px;
             padding: 25px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             min-height: calc(100vh - 70px);
+            max-height: calc(100vh - 70px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .main-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
         
         .sidebar-collapsed ~ .main-content {
             margin-left: 60px;
+        }
+        
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
         
         .breadcrumb {
@@ -178,22 +288,100 @@
             margin: 15px 20px;
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
+        /* Responsive Design - Tablet and below */
+        @media (max-width: 992px) {
+            .main-modules {
+                display: none !important;
             }
             
-            .sidebar .nav-link span,
-            .sidebar-section-title {
-                display: none;
+            .navbar-toggler-custom {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Ensure navbar content is visible */
+            .navbar-brand {
+                font-size: 1.2rem;
+                flex: 1;
+                margin-left: 10px;
+            }
+            
+            /* Make user menu visible */
+            .navbar-nav.ms-auto {
+                margin-left: auto !important;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
             }
             
             .main-content {
-                margin-left: 60px;
+                margin-left: 0 !important;
+                width: 100%;
+                padding: 15px;
+                max-height: calc(100vh - 70px);
             }
             
-            .main-modules {
-                display: none !important;
+            .sidebar-collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar-collapsed.mobile-open {
+                transform: translateX(0);
+                width: 280px;
+            }
+            
+            .sidebar-overlay {
+                display: block;
+            }
+        }
+        
+        /* Responsive Design - Small tablets */
+        @media (max-width: 768px) {
+            .top-navbar {
+                padding: 0 10px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.1rem;
+                gap: 8px;
+            }
+            
+            .navbar-brand .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+        }
+        
+        /* Very small screens - Mobile */
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 10px;
+            }
+            
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .navbar-brand .logo-icon {
+                width: 28px;
+                height: 28px;
+            }
+            
+            /* Ensure dropdown menu is visible */
+            .navbar-nav .dropdown-toggle {
+                font-size: 0.9rem;
+                padding: 6px 10px;
+            }
+            
+            .navbar-nav .dropdown-toggle span {
+                display: none;
             }
         }
     </style>
@@ -204,10 +392,24 @@
     <!-- Top Navigation Bar - Main Modules -->
     <nav class="navbar navbar-expand-lg top-navbar">
         <div class="container-fluid">
+            <!-- Mobile Hamburger Menu Button -->
+            <button class="navbar-toggler-custom d-lg-none" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle navigation">
+                <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+            </button>
+            
             <!-- Brand/Logo -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <i class="bi bi-building me-2"></i>
-                Meta Build Lab
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}" style="flex-shrink: 0;">
+                <div class="logo-icon" style="flex-shrink: 0;">
+                    <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Building/skyline icon -->
+                        <rect x="35" y="30" width="12" height="30" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <path d="M 41 30 L 41 20 L 47 20 L 47 30" stroke="#ff8800" stroke-width="3" fill="none"/>
+                        <rect x="50" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <rect x="62" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <line x1="25" y1="60" x2="75" y2="60" stroke="#ff8800" stroke-width="3"/>
+                    </svg>
+                </div>
+                <span style="white-space: nowrap;">MetaBuild</span>
             </a>
             
             <!-- Main Module Navigation - Role Based -->
@@ -242,13 +444,13 @@
             {% endif %}
             
             <!-- User Menu -->
-            <div class="navbar-nav ms-auto">
+            <div class="navbar-nav ms-auto d-flex align-items-center">
                 <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-2"></i>
-                        <span class="d-none d-md-inline">
+                    <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-1 me-md-2"></i>
+                        <span class="d-none d-sm-inline">
                             {% if user.is_authenticated %}
-                                {{ user.get_role_display }} - {{ user.get_full_name|default:user.username }}
+                                <span class="d-none d-lg-inline">{{ user.get_role_display }} - </span>{{ user.get_full_name|default:user.username }}
                             {% else %}
                                 Guest
                             {% endif %}
@@ -274,11 +476,19 @@
         </div>
     </nav>
     
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+    
     <!-- Left Sidebar - Contextual Navigation -->
     <nav class="sidebar" id="sidebar">
-        <div class="p-3 border-bottom">
-            <button class="btn btn-outline-light btn-sm w-100" onclick="toggleSidebar()">
+        <div class="p-3 border-bottom d-none d-lg-block">
+            <button class="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center" onclick="toggleSidebar()">
                 <i class="bi bi-list me-2"></i><span>Toggle Menu</span>
+            </button>
+        </div>
+        <div class="p-3 border-bottom d-lg-none">
+            <button class="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center" onclick="closeMobileSidebar()">
+                <i class="bi bi-x-lg me-2"></i><span>Close Menu</span>
             </button>
         </div>
         
@@ -347,6 +557,81 @@
             sidebar.classList.toggle('sidebar-collapsed');
         }
         
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.add('mobile-open');
+            overlay.classList.add('active');
+            
+            // Prevent body scroll when sidebar is open on mobile
+            // But allow main content to maintain its scroll state
+            document.body.style.overflow = 'hidden';
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                // Store scroll position if needed
+                mainContent.style.pointerEvents = 'none';
+            }
+        }
+        
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            
+            // Restore body scroll and ensure main content is scrollable
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.style.overflow = 'auto';
+                mainContent.style.pointerEvents = 'auto';
+            }
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggler = document.querySelector('.navbar-toggler-custom');
+            
+            // Check if we're on mobile/tablet
+            if (window.innerWidth <= 992) {
+                // If sidebar is open and click is outside sidebar and not on toggler
+                if (sidebar && sidebar.classList.contains('mobile-open') && 
+                    overlay && !sidebar.contains(event.target) && 
+                    toggler && !toggler.contains(event.target)) {
+                    closeMobileSidebar();
+                }
+            }
+        });
+        
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.innerWidth > 992) {
+                    closeMobileSidebar();
+                    // Ensure main content is fully responsive after resize
+                    const mainContent = document.querySelector('.main-content');
+                    if (mainContent) {
+                        mainContent.style.overflow = 'auto';
+                        mainContent.style.pointerEvents = 'auto';
+                        mainContent.style.marginLeft = '';
+                    }
+                } else {
+                    // On mobile, ensure proper layout
+                    const mainContent = document.querySelector('.main-content');
+                    if (mainContent) {
+                        mainContent.style.marginLeft = '0';
+                    }
+                }
+            }, 250);
+        });
+        
         // Set active navigation item based on current URL
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
@@ -354,7 +639,8 @@
             
             navLinks.forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === currentPath) {
+                const href = link.getAttribute('href');
+                if (href && (currentPath === href || currentPath.startsWith(href + '/'))) {
                     link.classList.add('active');
                 }
             });

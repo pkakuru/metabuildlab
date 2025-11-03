@@ -15,6 +15,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:available_samples' %}">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Create Jobs</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
                     <i class="bi bi-clipboard2-data"></i>
                     <span>Sample Intake</span>
@@ -24,6 +30,12 @@
                 <a class="nav-link" href="{% url 'operations:samples_intake' %}">
                     <i class="bi bi-list"></i>
                     <span>All Samples</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:receipt_form_list' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>Receipt Forms</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -79,6 +91,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:available_samples' %}">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Create Jobs</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
                     <i class="bi bi-clipboard2-data"></i>
                     <span>Sample Intake</span>
@@ -88,6 +106,12 @@
                 <a class="nav-link" href="{% url 'operations:samples_intake' %}">
                     <i class="bi bi-list"></i>
                     <span>All Samples</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:receipt_form_list' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>Receipt Forms</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -116,18 +140,12 @@
 {% elif user.role == 'technician' %}
     <!-- 🔹 Technician - Personal Workflow -->
     <div class="sidebar-section">
-        <h6 class="sidebar-section-title">Sample Intake</h6>
+        <h6 class="sidebar-section-title">Shared View</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
-                    <i class="bi bi-clipboard2-data"></i>
-                    <span>Sample Intake</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
-                    <i class="bi bi-list"></i>
-                    <span>All Samples</span>
+                <a class="nav-link" href="{% url 'operations:technician_dashboard' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Technician Dashboard</span>
                 </a>
             </li>
         </ul>
@@ -138,6 +156,12 @@
     <div class="sidebar-section">
         <h6 class="sidebar-section-title">My Work</h6>
         <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>My Dashboard</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'operations:my_jobs' %}">
                     <i class="bi bi-person-workspace"></i>
@@ -154,6 +178,32 @@
                 <a class="nav-link" href="{% url 'operations:my_attachments' %}">
                     <i class="bi bi-paperclip"></i>
                     <span>My Attachments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="sidebar-section">
+        <h6 class="sidebar-section-title">Samples</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:sample_intake_dashboard' %}">
+                    <i class="bi bi-clipboard2-data"></i>
+                    <span>Sample Intake</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:samples_intake' %}">
+                    <i class="bi bi-list"></i>
+                    <span>All Samples</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:receipt_form_list' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>Receipt Forms</span>
                 </a>
             </li>
         </ul>
@@ -188,6 +238,24 @@
                 <a class="nav-link" href="{% url 'operations:samples_intake' %}">
                     <i class="bi bi-list"></i>
                     <span>All Samples</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:receipt_form_list' %}">
+                    <i class="bi bi-receipt"></i>
+                    <span>Receipt Forms</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:job_board' %}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Job Board</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'operations:available_samples' %}">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Create Jobs</span>
                 </a>
             </li>
             <li class="nav-item">

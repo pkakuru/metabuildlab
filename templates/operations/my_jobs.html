@@ -4,93 +4,272 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3">{{ page_title }}</h1>
-    <div class="d-flex gap-2">
-        <a href="{% url 'operations:results_entry' %}" class="btn btn-primary">
-            <i class="bi bi-clipboard-check"></i>
-            Enter Results
-        </a>
-        <a href="{% url 'operations:my_attachments' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-paperclip"></i>
-            My Attachments
-        </a>
+    <div>
+        <h1 class="h2 mb-1">{{ page_title }}</h1>
+        <p class="text-muted mb-0">
+            <i class="bi bi-person-workspace me-2"></i>Jobs assigned to you for testing
+        </p>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">My Assigned Jobs</h5>
-                <small class="text-muted">Tests assigned to you for completion</small>
-            </div>
+<!-- Job Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-info border-4">
             <div class="card-body">
-                <div class="text-center text-muted py-5">
-                    <i class="bi bi-clipboard-check display-1"></i>
-                    <h5 class="mt-3">No Jobs Assigned Yet</h5>
-                    <p>When tests are assigned to you for completion, they will appear here.</p>
-                    <a href="{% url 'operations:results_entry' %}" class="btn btn-primary">
-                        <i class="bi bi-clipboard-check"></i> Enter Results
-                    </a>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Total Jobs</div>
+                        <div class="h4 fw-bold mb-0">{{ total_jobs }}</div>
+                    </div>
+                    <i class="bi bi-list-task text-info fs-1"></i>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Technician Dashboard</h5>
-            </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-warning border-4">
             <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6">
-                        <div class="border-end">
-                            <h4 class="text-primary mb-0">0</h4>
-                            <small class="text-muted">Assigned Jobs</small>
-                        </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Assigned</div>
+                        <div class="h4 fw-bold mb-0">{{ assigned_jobs }}</div>
                     </div>
-                    <div class="col-6">
-                        <h4 class="text-success mb-0">0</h4>
-                        <small class="text-muted">Completed</small>
-                    </div>
-                </div>
-                
-                <hr>
-                
-                <div class="mb-3">
-                    <h6 class="text-muted">Quick Actions</h6>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'operations:results_entry' %}" class="btn btn-success btn-sm">
-                            <i class="bi bi-clipboard-check"></i> Enter Results
-                        </a>
-                        <a href="{% url 'operations:my_attachments' %}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-paperclip"></i> My Attachments
-                        </a>
-                        <a href="{% url 'operations:activity_log' %}" class="btn btn-outline-info btn-sm">
-                            <i class="bi bi-clock-history"></i> Activity Log
-                        </a>
-                    </div>
+                    <i class="bi bi-person-check text-warning fs-1"></i>
                 </div>
             </div>
         </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Technician Role</h5>
-            </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-primary border-4">
             <div class="card-body">
-                <p class="small text-muted">
-                    As a technician, you can:
-                </p>
-                <ul class="list-unstyled small">
-                    <li><i class="bi bi-check-circle text-success"></i> Complete assigned tests</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Enter test results</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Upload attachments</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Track job progress</li>
-                </ul>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">In Progress</div>
+                        <div class="h4 fw-bold mb-0">{{ in_progress_jobs }}</div>
+                    </div>
+                    <i class="bi bi-gear text-primary fs-1"></i>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-success border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Completed</div>
+                        <div class="h4 fw-bold mb-0">{{ completed_jobs }}</div>
+                    </div>
+                    <i class="bi bi-check-circle text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priority">
+                    <option value="">All Priorities</option>
+                    {% for priority_code, priority_name in priority_choices %}
+                        <option value="{{ priority_code }}" {% if priority_filter == priority_code %}selected{% endif %}>
+                            {{ priority_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-filter"></i> Filter
+                </button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Jobs List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">My Assigned Jobs</h5>
+    </div>
+    <div class="card-body">
+        {% if jobs %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Sample ID</th>
+                        <th>Client</th>
+                        <th>Sample Type</th>
+                        <th>Tests</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">{{ job.job_id }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="badge bg-primary">
+                                {{ job.sample.sample_id }}
+                            </a>
+                        </td>
+                        <td>
+                            <strong>{{ job.sample.client.name }}</strong>
+                        </td>
+                        <td>{{ job.sample.sample_type }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ job.total_tests }} test{{ job.total_tests|pluralize }}</span>
+                        </td>
+                        <td>
+                            {% if job.priority == 'rush' %}
+                                <span class="badge bg-danger">Rush</span>
+                            {% elif job.priority == 'urgent' %}
+                                <span class="badge bg-warning">Urgent</span>
+                            {% else %}
+                                <span class="badge bg-success">Normal</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if job.due_date %}
+                                {% now "Y-m-d" as today %}
+                                {% if job.due_date|date:"Y-m-d" < today %}
+                                    <div class="text-danger fw-bold">{{ job.due_date|date:"M d, Y" }}</div>
+                                    <small class="text-danger">Overdue</small>
+                                {% else %}
+                                    <div>{{ job.due_date|date:"M d, Y" }}</div>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if job.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif job.status == 'in_progress' %}
+                                <span class="badge bg-warning">In Progress</span>
+                            {% elif job.status == 'assigned' %}
+                                <span class="badge bg-info">Assigned</span>
+                            {% elif job.status == 'pending' %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% elif job.status == 'on_hold' %}
+                                <span class="badge bg-warning">On Hold</span>
+                            {% else %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'operations:job_detail' job.job_id %}" class="btn btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if job.status == 'assigned' or job.status == 'pending' %}
+                                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="start">
+                                    <button type="submit" class="btn btn-outline-success" title="Start Work">
+                                        <i class="bi bi-play-circle"></i>
+                                    </button>
+                                </form>
+                                {% elif job.status == 'in_progress' %}
+                                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="complete">
+                                    <button type="submit" class="btn btn-outline-success" title="Mark Complete" onclick="return confirm('Mark this job as completed?')">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </form>
+                                <a href="{% url 'operations:results_entry' %}" class="btn btn-outline-primary" title="Enter Results">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                {% elif job.status == 'on_hold' %}
+                                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="resume">
+                                    <button type="submit" class="btn btn-outline-primary" title="Resume Work">
+                                        <i class="bi bi-play-circle"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Jobs pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            You don't have any jobs assigned yet. Jobs will appear here once they are assigned to you by a Director, Lab Manager, or Office Staff member.
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

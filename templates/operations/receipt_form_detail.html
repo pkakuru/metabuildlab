@@ -1,0 +1,213 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+            <a href="{% url 'operations:receipt_form_pdf' srf.receipt_number %}" class="btn" style="background-color: #ff8800; border-color: #ff8800; color: white;" target="_blank">
+                <i class="bi bi-file-pdf"></i>
+                Generate PDF
+            </a>
+        <a href="{% url 'operations:receipt_form_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-receipt"></i> Sample Receipt Form
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Header Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 60px; height: 48px;">
+                                    <!-- Building/skyline icon -->
+                                    <rect x="35" y="30" width="12" height="30" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                                    <path d="M 41 30 L 41 20 L 47 20 L 47 30" stroke="#ff8800" stroke-width="3" fill="none"/>
+                                    <rect x="50" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                                    <rect x="62" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                                    <line x1="25" y1="60" x2="75" y2="60" stroke="#ff8800" stroke-width="3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="mb-0" style="color: #1a237e; font-weight: bold; font-size: 1.5rem;">META BUILDLAB</h5>
+                                <p class="mb-0" style="color: #3949ab; font-size: 0.9rem; font-weight: 600;">
+                                    QUALITY BUILT IN
+                                </p>
+                                <small class="text-muted">Laboratory Testing Services</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5>Receipt Number: <span class="badge" style="background-color: #ff8800; color: white;">{{ srf.receipt_number }}</span></h5>
+                        <p class="mb-0">
+                            <strong>Date Received:</strong><br>
+                            {{ srf.receipt_date|date:"F d, Y" }}<br>
+                            <small>{{ srf.receipt_date|date:"h:i A" }}</small>
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Client Information -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Client Information</h6>
+                        {% with first_sample=samples.first %}
+                        <p class="mb-1">
+                            <strong>Client:</strong> {{ first_sample.client.name }}<br>
+                            {% if first_sample.client.contact_person %}
+                            <strong>Contact:</strong> {{ first_sample.client.contact_person }}<br>
+                            {% endif %}
+                            {% if first_sample.client.email %}
+                            <strong>Email:</strong> {{ first_sample.client.email }}<br>
+                            {% endif %}
+                            {% if first_sample.client.phone %}
+                            <strong>Phone:</strong> {{ first_sample.client.phone }}<br>
+                            {% endif %}
+                        </p>
+                        {% endwith %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Delivery Information</h6>
+                        <p class="mb-1">
+                            <strong>Delivered By:</strong> {{ srf.delivered_by|default:"N/A" }}<br>
+                            {% if srf.project_reference %}
+                            <strong>Project Reference:</strong> {{ srf.project_reference }}<br>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Samples Table -->
+                <div class="mb-4">
+                    <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px; margin-bottom: 15px;">Samples Received</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead style="background-color: #ff8800; color: white;">
+                                <tr>
+                                    <th>Sample ID</th>
+                                    <th>Sample Type</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Tests Requested</th>
+                                    <th>Condition</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in samples %}
+                                <tr>
+                                    <td><strong>{{ sample.sample_id }}</strong></td>
+                                    <td>{{ sample.sample_type }}</td>
+                                    <td><small>{{ sample.sample_description|truncatewords:15 }}</small></td>
+                                    <td>{{ sample.quantity }}</td>
+                                    <td>
+                                        <ul class="list-unstyled mb-0 small">
+                                            {% for test_key, test_list in sample_tests.items %}
+                                                {% if test_key == sample.id %}
+                                                    {% for sample_test in test_list %}
+                                                    <li>{{ sample_test.test_item.test_name }}</li>
+                                                    {% empty %}
+                                                    <li class="text-muted">No tests listed</li>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% empty %}
+                                            <li class="text-muted">No tests listed</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if sample.sample_condition == 'good' %}success{% else %}warning{% endif %}">
+                                            {{ sample.get_sample_condition_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if srf.condition_notes or srf.special_instructions %}
+                <hr>
+                <div class="mb-4">
+                    {% if srf.condition_notes %}
+                    <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Condition Notes</h6>
+                    <p class="bg-light p-3 rounded">{{ srf.condition_notes }}</p>
+                    {% endif %}
+                    {% if srf.special_instructions %}
+                    <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Special Instructions</h6>
+                    <p class="bg-light p-3 rounded">{{ srf.special_instructions }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <!-- Signatures -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Received By (Lab Representative)</h6>
+                        <div class="border p-3" style="min-height: 100px;">
+                            {% if srf.received_by_signature %}
+                                <img src="{{ srf.received_by_signature }}" alt="Lab Signature" style="max-width: 100%; max-height: 60px;">
+                            {% else %}
+                                <div class="text-center text-muted" style="padding-top: 20px;">
+                                    Signature Area
+                                </div>
+                            {% endif %}
+                        </div>
+                        <p class="mt-2 mb-0">
+                            <strong>{{ srf.received_by_name|default:srf.received_by.get_full_name|default:srf.received_by.username }}</strong><br>
+                            <small class="text-muted">{{ srf.received_by.get_role_display }}</small>
+                        </p>
+                        <small class="text-muted">{{ srf.receipt_date|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 style="color: #ff8800; border-bottom: 2px solid #ff8800; padding-bottom: 5px;">Delivered By (Client Representative)</h6>
+                        <div class="border p-3" style="min-height: 100px;">
+                            {% if srf.delivered_by_signature %}
+                                <img src="{{ srf.delivered_by_signature }}" alt="Client Signature" style="max-width: 100%; max-height: 60px;">
+                            {% else %}
+                                <div class="text-center text-muted" style="padding-top: 20px;">
+                                    Signature Area
+                                </div>
+                            {% endif %}
+                        </div>
+                        <p class="mt-2 mb-0">
+                            <strong>{{ srf.delivered_by_name|default:srf.delivered_by }}</strong><br>
+                            <small class="text-muted">Client Representative</small>
+                        </p>
+                        <small class="text-muted">Date: _____________</small>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Footer -->
+                <div class="mt-4">
+                    <p class="small text-muted mb-0">
+                        <strong>Disclaimer:</strong> Samples are received in good condition unless otherwise noted. 
+                        Testing will be performed per the applicable standard methods.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

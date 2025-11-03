@@ -1,0 +1,232 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">{{ page_title }}</h1>
+        <p class="text-muted mb-0">
+            <i class="bi bi-people me-2"></i>Shared lab information and activities for all technicians
+        </p>
+    </div>
+    <div class="text-end">
+        <span class="badge bg-info">Shared View</span>
+    </div>
+</div>
+
+<!-- Lab Overview Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Total Active Jobs</div>
+                        <div class="h4 fw-bold mb-0">{{ total_lab_jobs }}</div>
+                        <div class="small text-primary">
+                            <i class="bi bi-kanban"></i> Across all technicians
+                        </div>
+                    </div>
+                    <i class="bi bi-kanban text-primary fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-success border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Samples This Week</div>
+                        <div class="h4 fw-bold mb-0">{{ week_samples|length }}</div>
+                        <div class="small text-success">
+                            <i class="bi bi-clipboard2-data"></i> New samples received
+                        </div>
+                    </div>
+                    <i class="bi bi-clipboard2-data text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-info border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Active Technicians</div>
+                        <div class="h4 fw-bold mb-0">{{ active_technicians|length }}</div>
+                        <div class="small text-info">
+                            <i class="bi bi-people"></i> Working on jobs
+                        </div>
+                    </div>
+                    <i class="bi bi-people text-info fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-start border-warning border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">Recent Activity</div>
+                        <div class="h4 fw-bold mb-0">{{ recent_lab_activity|length }}</div>
+                        <div class="small text-warning">
+                            <i class="bi bi-clock-history"></i> Last 7 days
+                        </div>
+                    </div>
+                    <i class="bi bi-activity text-warning fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Lab Activity -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-activity me-2"></i>Recent Lab Activity (Last 7 Days)
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_lab_activity %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Job ID</th>
+                                <th>Sample</th>
+                                <th>Client</th>
+                                <th>Assigned To</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in recent_lab_activity %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">{{ job.job_id }}</span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="badge bg-primary">
+                                        {{ job.sample.sample_id }}
+                                    </a>
+                                </td>
+                                <td><small>{{ job.sample.client.name|truncatewords:3 }}</small></td>
+                                <td>
+                                    <small>{{ job.assigned_to.get_full_name|default:job.assigned_to.username }}</small>
+                                </td>
+                                <td>
+                                    {% if job.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif job.status == 'in_progress' %}
+                                        <span class="badge bg-warning">In Progress</span>
+                                    {% elif job.status == 'assigned' %}
+                                        <span class="badge bg-info">Assigned</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ job.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><small>{{ job.created_at|timesince }} ago</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox display-6"></i>
+                    <p class="mt-2">No recent activity</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Active Technicians -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-people me-2"></i>Team Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if active_technicians %}
+                <ul class="list-unstyled mb-0">
+                    {% for tech in active_technicians %}
+                    <li class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div>
+                            <div class="fw-medium">{{ tech.get_full_name|default:tech.username }}</div>
+                            <small class="text-muted">{{ tech.email|truncatewords:1 }}</small>
+                        </div>
+                        <span class="badge bg-primary">{{ tech.job_count }} job{{ tech.job_count|pluralize }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted small mb-0">No active technicians with jobs</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Samples -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clipboard2-data me-2"></i>Recent Samples
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if week_samples %}
+                <ul class="list-unstyled mb-0">
+                    {% for sample in week_samples|slice:":5" %}
+                    <li class="mb-2 pb-2 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="badge bg-primary text-decoration-none">
+                                    {{ sample.sample_id }}
+                                </a>
+                                <div class="small mt-1">{{ sample.sample_type }}</div>
+                                <small class="text-muted">{{ sample.client.name|truncatewords:2 }}</small>
+                            </div>
+                            <small class="text-muted">{{ sample.received_date|timesince }} ago</small>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted small mb-0">No recent samples</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:dashboard' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-person-workspace me-2"></i>My Operations Dashboard
+                    </a>
+                    <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-list-task me-2"></i>My Jobs
+                    </a>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-clipboard2-data me-2"></i>View All Samples
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

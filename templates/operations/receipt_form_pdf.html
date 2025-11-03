@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Receipt Form {{ srf.receipt_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            border-bottom: 3px solid #ff8800;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .logo-section {
+            display: inline-block;
+            width: 45%;
+            vertical-align: top;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .logo-icon {
+            width: 60px;
+            height: 48px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .company-name {
+            color: #1a237e;
+            font-size: 22pt;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+        .tagline {
+            color: #3949ab;
+            font-size: 11pt;
+            font-weight: 600;
+            margin: 0;
+            padding: 0;
+        }
+        .receipt-info {
+            display: inline-block;
+            width: 50%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .receipt-number {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #ff8800;
+            margin-bottom: 5px;
+            background-color: #fff5e6;
+            padding: 5px 10px;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        h1 {
+            color: #1a237e;
+            font-size: 20pt;
+            margin: 10px 0;
+        }
+        h2 {
+            color: #ff8800;
+            font-size: 14pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ff8800;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th {
+            background-color: #ff8800;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 9pt;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .info-section {
+            margin: 20px 0;
+        }
+        .info-row {
+            margin: 8px 0;
+        }
+        .signature-box {
+            border: 2px solid #333;
+            height: 80px;
+            margin: 10px 0;
+            padding: 5px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            font-size: 9pt;
+            color: #666;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .badge {
+            background-color: #ff8800;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                        <!-- Building/skyline icon -->
+                        <rect x="35" y="30" width="12" height="30" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <path d="M 41 30 L 41 20 L 47 20 L 47 30" stroke="#ff8800" stroke-width="3" fill="none"/>
+                        <rect x="50" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <rect x="62" y="40" width="10" height="20" stroke="#ff8800" stroke-width="3" fill="none" rx="2"/>
+                        <line x1="25" y1="60" x2="75" y2="60" stroke="#ff8800" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="company-name" style="margin: 0; padding: 0;">META BUILDLAB</h1>
+                    <p class="tagline" style="margin: 2px 0;">QUALITY BUILT IN</p>
+                    <p style="margin: 2px 0; font-size: 9pt; color: #666;">Laboratory Testing Services</p>
+                </div>
+            </div>
+        </div>
+        <div class="receipt-info">
+            <div class="receipt-number">Receipt Number: {{ srf.receipt_number }}</div>
+            <p style="margin: 5px 0;"><strong>Date Received:</strong><br>
+            {{ srf.receipt_date|date:"F d, Y" }}<br>
+            <small>{{ srf.receipt_date|date:"h:i A" }}</small></p>
+        </div>
+    </div>
+
+    <h2>Client Information</h2>
+    <div class="info-section">
+        {% with first_sample=samples.first %}
+        <div class="info-row"><strong>Client:</strong> {{ first_sample.client.name }}</div>
+        {% if first_sample.client.contact_person %}
+        <div class="info-row"><strong>Contact Person:</strong> {{ first_sample.client.contact_person }}</div>
+        {% endif %}
+        {% if first_sample.client.email %}
+        <div class="info-row"><strong>Email:</strong> {{ first_sample.client.email }}</div>
+        {% endif %}
+        {% if first_sample.client.phone %}
+        <div class="info-row"><strong>Phone:</strong> {{ first_sample.client.phone }}</div>
+        {% endif %}
+        {% if first_sample.client.address %}
+        <div class="info-row"><strong>Address:</strong> {{ first_sample.client.address }}</div>
+        {% endif %}
+        {% endwith %}
+        {% if srf.delivered_by %}
+        <div class="info-row"><strong>Delivered By:</strong> {{ srf.delivered_by }}</div>
+        {% endif %}
+        {% if srf.project_reference %}
+        <div class="info-row"><strong>Project Reference:</strong> {{ srf.project_reference }}</div>
+        {% endif %}
+    </div>
+
+    <h2>Samples Received</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sample ID</th>
+                <th>Sample Type</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Tests Requested</th>
+                <th>Condition</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sample in samples %}
+            <tr>
+                <td><strong>{{ sample.sample_id }}</strong></td>
+                <td>{{ sample.sample_type }}</td>
+                <td>{{ sample.sample_description|truncatewords:10 }}</td>
+                <td>{{ sample.quantity }}</td>
+                <td>
+                    {% for test_key, test_list in sample_tests.items %}
+                        {% if test_key == sample.id %}
+                            {% for test in test_list %}
+                            • {{ test.test_item.test_name }}<br>
+                            {% empty %}
+                            N/A
+                            {% endfor %}
+                        {% endif %}
+                    {% empty %}
+                    N/A
+                    {% endfor %}
+                </td>
+                <td>{{ sample.get_sample_condition_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if srf.condition_notes or srf.special_instructions %}
+    <h2>Additional Information</h2>
+    {% if srf.condition_notes %}
+    <div class="info-section">
+        <p><strong>Condition Notes:</strong></p>
+        <p>{{ srf.condition_notes }}</p>
+    </div>
+    {% endif %}
+    {% if srf.special_instructions %}
+    <div class="info-section">
+        <p><strong>Special Instructions:</strong></p>
+        <p>{{ srf.special_instructions }}</p>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <h2>Signatures</h2>
+    <table style="margin-top: 20px;">
+        <tr>
+            <td style="width: 50%; border: none;">
+                <strong>Received By (Lab Representative)</strong><br>
+                <div class="signature-box">
+                    {% if srf.received_by_signature %}
+                        <img src="{{ srf.received_by_signature }}" style="max-width: 100%; max-height: 70px;">
+                    {% endif %}
+                </div>
+                <p style="margin-top: 5px;">
+                    {{ srf.received_by_name|default:srf.received_by.get_full_name|default:srf.received_by.username }}<br>
+                    <small>{{ srf.received_by.get_role_display }}</small><br>
+                    <small>Date: {{ srf.receipt_date|date:"M d, Y" }}</small>
+                </p>
+            </td>
+            <td style="width: 50%; border: none;">
+                <strong>Delivered By (Client Representative)</strong><br>
+                <div class="signature-box">
+                    {% if srf.delivered_by_signature %}
+                        <img src="{{ srf.delivered_by_signature }}" style="max-width: 100%; max-height: 70px;">
+                    {% endif %}
+                </div>
+                <p style="margin-top: 5px;">
+                    {{ srf.delivered_by_name|default:srf.delivered_by }}<br>
+                    <small>Client Representative</small><br>
+                    <small>Date: _____________</small>
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p class="text-center">
+            <strong>Disclaimer:</strong> Samples are received in good condition unless otherwise noted. 
+            Testing will be performed per the applicable standard methods.
+        </p>
+        <p class="text-center" style="margin-top: 10px;">
+            This is an official document generated by MetaBuild Lab on {{ srf.created_at|date:"F d, Y" }}.
+        </p>
+    </div>
+</body>
+</html>
+

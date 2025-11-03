@@ -232,3 +232,278 @@ class SampleStatusHistory(models.Model):
 
     def __str__(self):
         return f"{self.sample.sample_id} - {self.old_status} → {self.new_status}"
+
+
+class Job(models.Model):
+    """Job assignment linking samples to technicians for testing"""
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('assigned', 'Assigned'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('on_hold', 'On Hold'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    # Job identification
+    job_id = models.CharField(max_length=50, unique=True, help_text="Unique job identifier")
+    sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='jobs')
+    
+    # Assignment
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, 
+                                     related_name='assigned_jobs', 
+                                     limit_choices_to={'role': 'technician'},
+                                     help_text="Technician assigned to this job")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_jobs',
+                                   help_text="User who created this job")
+    
+    # Job details
+    assigned_tests = models.ManyToManyField(SampleTest, related_name='jobs', 
+                                           help_text="Specific tests assigned in this job")
+    priority = models.CharField(max_length=20, choices=Sample.PRIORITY_CHOICES, default='normal')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Dates
+    assigned_date = models.DateTimeField(null=True, blank=True, help_text="When job was assigned to technician")
+    due_date = models.DateField(null=True, blank=True, help_text="Expected completion date")
+    started_date = models.DateTimeField(null=True, blank=True, help_text="When technician started work")
+    completed_date = models.DateTimeField(null=True, blank=True, help_text="When job was completed")
+    
+    # Instructions and notes
+    instructions = models.TextField(blank=True, help_text="Special instructions for the technician")
+    notes = models.TextField(blank=True, help_text="Additional notes")
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Job"
+        verbose_name_plural = "Jobs"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['job_id']),
+            models.Index(fields=['status']),
+            models.Index(fields=['assigned_to']),
+            models.Index(fields=['due_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.job_id} - {self.sample.sample_id}"
+    
+    def save(self, *args, **kwargs):
+        if not self.job_id:
+            self.job_id = self.generate_job_id()
+        super().save(*args, **kwargs)
+    
+    def generate_job_id(self):
+        """Generate unique job ID"""
+        from django.utils import timezone
+        year = timezone.now().year
+        month = timezone.now().month
+        
+        last_job = Job.objects.filter(
+            job_id__startswith=f"JOB{year:04d}{month:02d}"
+        ).order_by('-job_id').first()
+        
+        if last_job:
+            try:
+                last_number = int(last_job.job_id[-4:])
+                next_number = last_number + 1
+            except (ValueError, IndexError):
+                next_number = 1
+        else:
+            next_number = 1
+        
+        return f"JOB{year:04d}{month:02d}{next_number:04d}"
+    
+    @property
+    def total_tests(self):
+        """Return total number of tests assigned"""
+        return self.assigned_tests.count()
+    
+    def assign_to_technician(self, technician, due_date=None):
+        """Assign job to a technician"""
+        from django.utils import timezone
+        self.assigned_to = technician
+        self.assigned_date = timezone.now()
+        self.status = 'assigned'
+        if due_date:
+            self.due_date = due_date
+        self.save()
+    
+    def start_work(self, user):
+        """Start working on the job - called by technician"""
+        from django.utils import timezone
+        from .models import SampleStatusHistory
+        
+        if self.status in ['assigned', 'pending']:
+            self.status = 'in_progress'
+            self.started_date = timezone.now()
+            self.save()
+            
+            # Update sample status if needed
+            if self.sample.status in ['received', 'assigned']:
+                old_status = self.sample.status
+                self.sample.status = 'in_progress'
+                self.sample.save()
+                
+                # Create status history entry
+                SampleStatusHistory.objects.create(
+                    sample=self.sample,
+                    old_status=old_status,
+                    new_status='in_progress',
+                    changed_by=user,
+                    notes=f'Work started on job {self.job_id}'
+                )
+            return True
+        return False
+    
+    def complete_job(self, user):
+        """Mark job as completed - called by technician"""
+        from django.utils import timezone
+        from .models import SampleStatusHistory
+        
+        if self.status == 'in_progress':
+            self.status = 'completed'
+            self.completed_date = timezone.now()
+            self.save()
+            
+            # Check if all jobs for this sample are completed
+            all_jobs_completed = not Job.objects.filter(
+                sample=self.sample,
+                status__in=['assigned', 'in_progress', 'pending']
+            ).exclude(id=self.id).exists()
+            
+            # Update sample status if all jobs are done
+            if all_jobs_completed and self.sample.status == 'in_progress':
+                old_status = self.sample.status
+                self.sample.status = 'testing'
+                self.sample.save()
+                
+                # Create status history entry
+                SampleStatusHistory.objects.create(
+                    sample=self.sample,
+                    old_status=old_status,
+                    new_status='testing',
+                    changed_by=user,
+                    notes=f'All jobs completed. Job {self.job_id} finished.'
+                )
+            return True
+        return False
+    
+    def put_on_hold(self, user, notes=''):
+        """Put job on hold"""
+        from django.utils import timezone
+        
+        if self.status in ['assigned', 'in_progress']:
+            old_status = self.status
+            self.status = 'on_hold'
+            if notes:
+                self.notes += f"\n[On Hold - {timezone.now().strftime('%Y-%m-%d %H:%M')}] {notes}"
+            self.save()
+            return True
+        return False
+    
+    def resume_work(self, user):
+        """Resume work on a job that was on hold"""
+        from django.utils import timezone
+        
+        if self.status == 'on_hold':
+            self.status = 'in_progress'
+            if not self.started_date:
+                self.started_date = timezone.now()
+            self.save()
+            return True
+        return False
+
+
+class SampleReceiptForm(models.Model):
+    """Sample Receipt Form (SRF) - Formal acknowledgment of sample receipt"""
+    
+    # Receipt identification
+    receipt_number = models.CharField(max_length=50, unique=True, help_text="Auto-generated receipt number (e.g., SRF-2025-0012)")
+    
+    # Related sample(s) - SRF can cover one or multiple samples
+    samples = models.ManyToManyField(Sample, related_name='receipt_forms', help_text="Samples included in this receipt")
+    
+    # Receipt date and time
+    receipt_date = models.DateTimeField(default=timezone.now, help_text="Date and time samples were received")
+    
+    # Lab information
+    received_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_receipts',
+                                    help_text="Lab staff member who received the samples")
+    received_by_signature = models.TextField(blank=True, help_text="Signature of lab representative")
+    received_by_name = models.CharField(max_length=200, blank=True, help_text="Name of lab representative")
+    
+    # Client information
+    delivered_by = models.CharField(max_length=200, blank=True, help_text="Client representative who delivered samples")
+    delivered_by_signature = models.TextField(blank=True, help_text="Signature of client representative")
+    delivered_by_name = models.CharField(max_length=200, blank=True, help_text="Name of client representative")
+    
+    # Project/Site reference (optional)
+    project_reference = models.CharField(max_length=200, blank=True, help_text="Project or site reference")
+    
+    # Condition notes
+    condition_notes = models.TextField(blank=True, help_text="Notes about sample condition upon receipt")
+    
+    # Additional information
+    special_instructions = models.TextField(blank=True, help_text="Any special instructions or notes")
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_signed = models.BooleanField(default=False, help_text="Whether both parties have signed")
+    pdf_generated = models.BooleanField(default=False, help_text="Whether PDF has been generated")
+    
+    class Meta:
+        verbose_name = "Sample Receipt Form"
+        verbose_name_plural = "Sample Receipt Forms"
+        ordering = ['-receipt_date']
+        indexes = [
+            models.Index(fields=['receipt_number']),
+            models.Index(fields=['receipt_date']),
+            models.Index(fields=['received_by']),
+        ]
+    
+    def __str__(self):
+        return f"{self.receipt_number} - {self.receipt_date.date()}"
+    
+    def save(self, *args, **kwargs):
+        if not self.receipt_number:
+            self.receipt_number = self.generate_receipt_number()
+        super().save(*args, **kwargs)
+    
+    def generate_receipt_number(self):
+        """Generate unique receipt number in format SRF-YYYY-NNNN"""
+        from django.utils import timezone
+        year = timezone.now().year
+        
+        last_receipt = SampleReceiptForm.objects.filter(
+            receipt_number__startswith=f"SRF-{year}-"
+        ).order_by('-receipt_number').first()
+        
+        if last_receipt:
+            try:
+                last_number = int(last_receipt.receipt_number.split('-')[-1])
+                next_number = last_number + 1
+            except (ValueError, IndexError):
+                next_number = 1
+        else:
+            next_number = 1
+        
+        return f"SRF-{year}-{next_number:04d}"
+    
+    @property
+    def sample_count(self):
+        """Return number of samples in this receipt"""
+        return self.samples.count()
+    
+    @property
+    def total_tests(self):
+        """Return total number of tests requested across all samples"""
+        total = 0
+        for sample in self.samples.all():
+            total += sample.total_tests
+        return total

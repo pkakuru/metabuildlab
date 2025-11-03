@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Client, Sample, SampleTest
+from .models import Client, Sample, SampleTest, Job, SampleReceiptForm
 from pricing.models import TestItem
 
 
@@ -181,3 +181,113 @@ class SampleStatusUpdateForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-select'}),
             'priority': forms.Select(attrs={'class': 'form-select'}),
         }
+
+
+class JobCreateForm(forms.Form):
+    """Form for creating a job from a sample"""
+    
+    sample = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.HiddenInput(),
+        required=True
+    )
+    
+    assigned_tests = forms.ModelMultipleChoiceField(
+        queryset=None,
+        required=True,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        help_text="Select tests to assign in this job"
+    )
+    
+    assigned_to = forms.ModelChoiceField(
+        queryset=None,
+        required=True,
+        empty_label="Select a technician...",
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text="Technician to assign this job to"
+    )
+    
+    priority = forms.ChoiceField(
+        choices=Sample.PRIORITY_CHOICES,
+        initial='normal',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    due_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        help_text="Expected completion date (optional)"
+    )
+    
+    instructions = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Special instructions for the technician'}),
+        help_text="Additional instructions for this job"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        sample = kwargs.pop('sample', None)
+        super().__init__(*args, **kwargs)
+        
+        if sample:
+            self.fields['sample'].initial = sample
+            self.fields['sample'].queryset = Sample.objects.filter(id=sample.id)
+            
+            # Only show tests that are requested for this sample
+            from .models import SampleTest
+            sample_tests = SampleTest.objects.filter(sample=sample)
+            self.fields['assigned_tests'].queryset = sample_tests
+            self.fields['assigned_tests'].initial = sample_tests.values_list('id', flat=True)
+            
+            # Only show technicians
+            from core.models import User
+            self.fields['assigned_to'].queryset = User.objects.filter(role='technician', is_active=True).order_by('username')
+
+
+class SampleReceiptFormForm(forms.ModelForm):
+    """Form for creating/editing Sample Receipt Form (SRF)"""
+    
+    samples = forms.ModelMultipleChoiceField(
+        queryset=Sample.objects.all(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        help_text="Select samples to include in this receipt"
+    )
+    
+    class Meta:
+        model = SampleReceiptForm
+        fields = [
+            'samples', 'receipt_date', 'project_reference',
+            'delivered_by', 'delivered_by_name',
+            'received_by_name', 'condition_notes', 'special_instructions'
+        ]
+        widgets = {
+            'receipt_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'project_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Project or site reference (optional)'}),
+            'delivered_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Client representative name'}),
+            'delivered_by_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Client representative full name for signature'}),
+            'received_by_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your name as lab representative'}),
+            'condition_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Notes about sample condition upon receipt'}),
+            'special_instructions': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Any special instructions or notes'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        sample_ids = kwargs.pop('sample_ids', None)
+        super().__init__(*args, **kwargs)
+        
+        # Filter samples - show only received samples that don't already have a receipt
+        queryset = Sample.objects.filter(status='received')
+        if sample_ids:
+            queryset = queryset.filter(id__in=sample_ids)
+        
+        # Exclude samples that already have receipts
+        # Get sample IDs that already have receipts
+        from .models import SampleReceiptForm
+        samples_with_receipts = SampleReceiptForm.objects.values_list('samples__id', flat=True).distinct()
+        queryset = queryset.exclude(id__in=samples_with_receipts)
+        self.fields['samples'].queryset = queryset
+        
+        # Pre-fill received_by_name with user's name
+        if user and not self.instance.pk:
+            self.fields['received_by_name'].initial = user.get_full_name() or user.username

@@ -1,0 +1,269 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:job_board' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Job Board
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Job Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Job Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Job ID:</strong> <span class="badge bg-primary">{{ job.job_id }}</span></p>
+                        <p><strong>Status:</strong> 
+                            {% if job.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif job.status == 'in_progress' %}
+                                <span class="badge bg-warning">In Progress</span>
+                            {% elif job.status == 'assigned' %}
+                                <span class="badge bg-info">Assigned</span>
+                            {% elif job.status == 'pending' %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% elif job.status == 'on_hold' %}
+                                <span class="badge bg-warning">On Hold</span>
+                            {% else %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Priority:</strong> 
+                            {% if job.priority == 'rush' %}
+                                <span class="badge bg-danger">Rush</span>
+                            {% elif job.priority == 'urgent' %}
+                                <span class="badge bg-warning">Urgent</span>
+                            {% else %}
+                                <span class="badge bg-success">Normal</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Created:</strong> {{ job.created_at|date:"M d, Y H:i" }}</p>
+                        <p><strong>Created By:</strong> {{ job.created_by.get_full_name|default:job.created_by.username }}</p>
+                        {% if job.due_date %}
+                        <p><strong>Due Date:</strong> 
+                            {% if job.due_date < today %}
+                                <span class="text-danger">{{ job.due_date|date:"M d, Y" }} (Overdue)</span>
+                            {% else %}
+                                {{ job.due_date|date:"M d, Y" }}
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-box"></i> Sample Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Sample ID:</strong> 
+                            <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="badge bg-primary">
+                                {{ job.sample.sample_id }}
+                            </a>
+                        </p>
+                        <p><strong>Client:</strong> {{ job.sample.client.name }}</p>
+                        <p><strong>Sample Type:</strong> {{ job.sample.sample_type }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Quantity:</strong> {{ job.sample.quantity }}</p>
+                        <p><strong>Priority:</strong> {{ job.sample.get_priority_display }}</p>
+                        <p><strong>Received:</strong> {{ job.sample.received_date|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+                <p><strong>Description:</strong> {{ job.sample.sample_description }}</p>
+            </div>
+        </div>
+
+        <!-- Assigned Tests -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clipboard-check"></i> Assigned Tests ({{ job.total_tests }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Test Name</th>
+                                <th>Method/Standard</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sample_test in assigned_tests %}
+                            <tr>
+                                <td>{{ sample_test.test_item.test_name }}</td>
+                                <td><small class="text-muted">{{ sample_test.test_item.method_standard }}</small></td>
+                                <td>{{ sample_test.quantity_requested }}</td>
+                                <td>
+                                    {% if sample_test.is_completed %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        {% if job.instructions %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Special Instructions</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ job.instructions }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <!-- Assignment Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Assignment</h5>
+            </div>
+            <div class="card-body">
+                {% if job.assigned_to %}
+                <p><strong>Assigned To:</strong></p>
+                <p>{{ job.assigned_to.get_full_name|default:job.assigned_to.username }}</p>
+                <p><small class="text-muted">{{ job.assigned_to.email }}</small></p>
+                {% if job.assigned_date %}
+                <hr>
+                <p><strong>Assigned Date:</strong><br>
+                <small>{{ job.assigned_date|date:"M d, Y H:i" }}</small></p>
+                {% endif %}
+                {% else %}
+                <p class="text-muted">Not yet assigned</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-box"></i> View Sample Details
+                    </a>
+                    {% if can_manage_jobs %}
+                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                        <i class="bi bi-pencil"></i> Edit Job
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Update Actions (For Assigned Technician) -->
+        {% if is_assigned_technician %}
+        <div class="card mt-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-gear"></i> Job Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if job.status == 'assigned' or job.status == 'pending' %}
+                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="start">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-play-circle"></i> Start Work
+                    </button>
+                </form>
+                {% elif job.status == 'in_progress' %}
+                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn btn-success w-100" onclick="return confirm('Mark this job as completed?')">
+                        <i class="bi bi-check-circle"></i> Mark as Completed
+                    </button>
+                </form>
+                
+                <button type="button" class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#holdJobModal">
+                    <i class="bi bi-pause-circle"></i> Put on Hold
+                </button>
+                {% elif job.status == 'on_hold' %}
+                <form method="post" action="{% url 'operations:update_job_status' job.job_id %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="resume">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-play-circle"></i> Resume Work
+                    </button>
+                </form>
+                {% elif job.status == 'completed' %}
+                <div class="alert alert-success mb-0">
+                    <i class="bi bi-check-circle"></i> This job has been completed.
+                    {% if job.completed_date %}
+                    <br><small>Completed: {{ job.completed_date|date:"M d, Y H:i" }}</small>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Put Job on Hold Modal -->
+{% if is_assigned_technician and job.status == 'in_progress' %}
+<div class="modal fade" id="holdJobModal" tabindex="-1" aria-labelledby="holdJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="holdJobModalLabel">Put Job on Hold</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'operations:update_job_status' job.job_id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="hold">
+                    <div class="mb-3">
+                        <label for="hold_notes" class="form-label">Reason (optional):</label>
+                        <textarea class="form-control" id="hold_notes" name="hold_notes" rows="3" placeholder="Enter reason for putting this job on hold..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Put on Hold</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

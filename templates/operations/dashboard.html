@@ -254,90 +254,292 @@
     {% if user.role == 'technician' %}
         <!-- Technician: My Jobs Overview -->
         <div class="col-lg-8">
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-person-workspace me-2"></i>My Current Jobs
+                        <i class="bi bi-person-workspace me-2"></i>My Recent Jobs
                     </h5>
                     <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-primary btn-sm">View All</a>
                 </div>
                 <div class="card-body">
+                    {% if recent_jobs %}
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Job ID</th>
-                                    <th>Test Type</th>
+                                    <th>Sample</th>
+                                    <th>Client</th>
+                                    <th>Tests</th>
                                     <th>Priority</th>
                                     <th>Due Date</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for job in recent_jobs %}
                                 <tr>
-                                    <td><span class="badge bg-secondary">JB-2024-089</span></td>
-                                    <td>Concrete Compressive Strength</td>
-                                    <td><span class="badge bg-danger">High</span></td>
-                                    <td>Oct 28, 2024</td>
-                                    <td><span class="badge bg-warning">Testing</span></td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ job.job_id }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="badge bg-primary">
+                                            {{ job.sample.sample_id }}
+                                        </a>
+                                    </td>
+                                    <td><small>{{ job.sample.client.name|truncatewords:2 }}</small></td>
+                                    <td>
+                                        <span class="badge bg-info">{{ job.total_tests }}</span>
+                                    </td>
+                                    <td>
+                                        {% if job.priority == 'rush' %}
+                                            <span class="badge bg-danger">Rush</span>
+                                        {% elif job.priority == 'urgent' %}
+                                            <span class="badge bg-warning">Urgent</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.due_date %}
+                                            {% now "Y-m-d" as today %}
+                                            {% if job.due_date|date:"Y-m-d" < today %}
+                                                <span class="text-danger fw-bold">{{ job.due_date|date:"M d" }}</span>
+                                            {% else %}
+                                                {{ job.due_date|date:"M d" }}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif job.status == 'in_progress' %}
+                                            <span class="badge bg-warning">In Progress</span>
+                                        {% elif job.status == 'assigned' %}
+                                            <span class="badge bg-info">Assigned</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ job.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'operations:job_detail' job.job_id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td><span class="badge bg-secondary">JB-2024-087</span></td>
-                                    <td>Soil Classification</td>
-                                    <td><span class="badge bg-success">Normal</span></td>
-                                    <td>Oct 30, 2024</td>
-                                    <td><span class="badge bg-info">Ready</span></td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mt-2">No jobs assigned yet</p>
+                        <p class="small">Jobs will appear here once they are assigned to you</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Performance Analytics -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-graph-up me-2"></i>My Performance Metrics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <div class="small text-muted">Total Completed</div>
+                                <div class="h3 fw-bold">{{ completed }}</div>
+                                <small class="text-muted">Out of {{ total_assigned }} assigned</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <div class="small text-muted">Average Completion Time</div>
+                                <div class="h3 fw-bold">
+                                    {% if avg_completion_days %}
+                                        {{ avg_completion_days }} days
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">For completed jobs</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <div class="small text-muted">In Progress</div>
+                                <div class="h3 fw-bold text-warning">{{ in_progress }}</div>
+                                <small class="text-muted">Currently working on</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <div class="small text-muted">Pending Tests</div>
+                                <div class="h3 fw-bold text-info">{{ pending_tests_count }}</div>
+                                <small class="text-muted">Awaiting results entry</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if jobs_by_priority %}
+                    <hr>
+                    <h6 class="mb-3">Workload by Priority</h6>
+                    <div class="row">
+                        {% for item in jobs_by_priority %}
+                        <div class="col-md-4 mb-2">
+                            <div class="d-flex justify-content-between align-items-center p-2 border rounded">
+                                <span class="small">
+                                    {% if item.priority == 'rush' %}
+                                        <span class="badge bg-danger">Rush</span>
+                                    {% elif item.priority == 'urgent' %}
+                                        <span class="badge bg-warning">Urgent</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Normal</span>
+                                    {% endif %}
+                                </span>
+                                <strong>{{ item.count }} job{{ item.count|pluralize }}</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-    {% else %}
-        <!-- Managers: Recent Jobs Activity -->
+    {% elif user.role == 'director' or user.role == 'lab_manager' or user.role == 'office_staff' %}
+        <!-- Managers: Recent Jobs Activity & Progress Tracking -->
         <div class="col-lg-8">
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-kanban me-2"></i>Recent Lab Activity
+                        <i class="bi bi-activity me-2"></i>Recent Job Updates
                     </h5>
-                    <a href="{% url 'operations:job_board' %}" class="btn btn-outline-primary btn-sm">Job Board</a>
+                    <a href="{% url 'operations:job_board' %}" class="btn btn-outline-primary btn-sm">View All Jobs</a>
                 </div>
                 <div class="card-body">
+                    {% if recent_updates %}
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Job ID</th>
+                                    <th>Sample</th>
                                     <th>Client</th>
-                                    <th>Test Type</th>
                                     <th>Technician</th>
                                     <th>Status</th>
-                                    <th>Updated</th>
+                                    <th>Last Updated</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for job in recent_updates %}
                                 <tr>
-                                    <td><span class="badge bg-secondary">JB-2024-091</span></td>
-                                    <td>UNRA</td>
-                                    <td>Asphalt Testing</td>
-                                    <td>John Mukasa</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
-                                    <td>2 hours ago</td>
+                                    <td>
+                                        <a href="{% url 'operations:job_detail' job.job_id %}" class="badge bg-secondary">
+                                            {{ job.job_id }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'operations:sample_detail' job.sample.sample_id %}" class="badge bg-primary">
+                                            {{ job.sample.sample_id }}
+                                        </a>
+                                    </td>
+                                    <td><small>{{ job.sample.client.name|truncatewords:2 }}</small></td>
+                                    <td>
+                                        <small>{{ job.assigned_to.get_full_name|default:job.assigned_to.username }}</small>
+                                    </td>
+                                    <td>
+                                        {% if job.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif job.status == 'in_progress' %}
+                                            <span class="badge bg-warning">In Progress</span>
+                                        {% elif job.status == 'assigned' %}
+                                            <span class="badge bg-info">Assigned</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ job.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ job.updated_at|timesince }} ago</small></td>
                                 </tr>
-                                <tr>
-                                    <td><span class="badge bg-secondary">JB-2024-090</span></td>
-                                    <td>Kampala Construction</td>
-                                    <td>Concrete Core</td>
-                                    <td>Sarah Nakato</td>
-                                    <td><span class="badge bg-warning">In Progress</span></td>
-                                    <td>4 hours ago</td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mt-2">No recent job updates</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Samples in Progress -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clipboard2-data me-2"></i>Samples in Progress
+                    </h5>
+                    <a href="{% url 'operations:samples_intake' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if samples_in_progress %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Sample ID</th>
+                                    <th>Client</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Jobs</th>
+                                    <th>Received</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in samples_in_progress %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'operations:sample_detail' sample.sample_id %}" class="badge bg-primary">
+                                            {{ sample.sample_id }}
+                                        </a>
+                                    </td>
+                                    <td><small>{{ sample.client.name|truncatewords:2 }}</small></td>
+                                    <td><small>{{ sample.sample_type }}</small></td>
+                                    <td>
+                                        {% if sample.status == 'in_progress' %}
+                                            <span class="badge bg-warning">In Progress</span>
+                                        {% elif sample.status == 'testing' %}
+                                            <span class="badge bg-info">Testing</span>
+                                        {% elif sample.status == 'assigned' %}
+                                            <span class="badge bg-primary">Assigned</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ sample.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ sample.job_count }} job{{ sample.job_count|pluralize }}</span>
+                                    </td>
+                                    <td><small>{{ sample.received_date|date:"M d" }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mt-2">No samples in progress</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -359,6 +561,9 @@
                     </a>
                     
                     {% if user.role == 'technician' %}
+                        <a href="{% url 'operations:technician_dashboard' %}" class="btn btn-outline-info">
+                            <i class="bi bi-people me-2"></i>Technician Dashboard
+                        </a>
                         <a href="{% url 'operations:my_jobs' %}" class="btn btn-outline-primary">
                             <i class="bi bi-person-workspace me-2"></i>My Jobs
                         </a>

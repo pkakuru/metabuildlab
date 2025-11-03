@@ -1,0 +1,144 @@
+{% extends 'operations/base_operations.html' %}
+
+{% block title %}{{ page_title }} - Meta Build Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ page_title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'operations:create_receipt_form' %}" class="btn" style="background-color: #ff8800; border-color: #ff8800; color: white;">
+            <i class="bi bi-plus-circle"></i>
+            Create Receipt Form
+        </a>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-10">
+                <label for="search" class="form-label">Search Receipt Forms</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ search_query }}" placeholder="Search by receipt number, delivered by, or project reference...">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn w-100" style="background-color: #ff8800; border-color: #ff8800; color: white;">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Receipt Forms List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">All Receipt Forms</h5>
+    </div>
+    <div class="card-body">
+        {% if receipts %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Receipt Number</th>
+                        <th>Date Received</th>
+                        <th>Client</th>
+                        <th>Samples</th>
+                        <th>Delivered By</th>
+                        <th>Received By</th>
+                        <th>PDF</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                    <tr>
+                        <td>
+                            <span class="badge" style="background-color: #ff8800; color: white;">{{ receipt.receipt_number }}</span>
+                        </td>
+                        <td>{{ receipt.receipt_date|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% with first_sample=receipt.samples.first %}
+                            <strong>{{ first_sample.client.name }}</strong>
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ receipt.sample_count }} sample{{ receipt.sample_count|pluralize }}</span>
+                        </td>
+                        <td>{{ receipt.delivered_by|default:"N/A" }}</td>
+                        <td>
+                            <small>{{ receipt.received_by.get_full_name|default:receipt.received_by.username }}</small>
+                        </td>
+                        <td>
+                            {% if receipt.pdf_generated %}
+                                <span class="badge bg-success">Generated</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'operations:receipt_form_detail' receipt.receipt_number %}" class="btn btn-outline-primary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'operations:receipt_form_pdf' receipt.receipt_number %}" class="btn btn-outline-danger" title="Generate PDF" target="_blank">
+                                    <i class="bi bi-file-pdf"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Receipt forms pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            No receipt forms found. <a href="{% url 'operations:create_receipt_form' %}">Create a receipt form</a> for received samples.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
